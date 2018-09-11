@@ -1,3 +1,4 @@
+import JGit.Account
 import JGit.JGitService
 
 fun main(args : Array<String>) {
@@ -9,7 +10,7 @@ class App {
     private val jGitService: JGitService
 
     init {
-        val remoteRepositoryUri = "https://github.com/BradChes/kotlin-play.git"
+        val remoteRepositoryUri = Account.REMOTE_REPO_URI
         jGitService = JGitService(remoteRepositoryUri)
     }
 }
