@@ -15,7 +15,6 @@ dependencies {
     implementation group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.0.3.201809091024-r'
 
     testImplementation 'junit:junit:4.12'
-
 }
 
 compileKotlin {
