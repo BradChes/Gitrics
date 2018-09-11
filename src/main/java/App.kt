@@ -1,5 +1,5 @@
-import JGit.Account
-import JGit.JGitService
+import jGit.Account
+import jGit.JGitService
 
 fun main(args : Array<String>) {
     App()

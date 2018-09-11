@@ -1,4 +1,4 @@
-package JGit
+package jGit
 
 class Account {
     companion object {
