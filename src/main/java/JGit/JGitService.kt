@@ -1,10 +1,20 @@
 package JGit
 
 import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.lib.Repository
+import java.io.File
+import java.nio.file.Files
 
-class JGitService(private val repository: Repository) {
+class JGitService(remoteRepositoryUri: String) {
 
-    private var git: Git = Git(repository)
+    private var git: Git
 
+    init {
+        val localPath = File.createTempFile("JGitRepository", null)
+        Files.delete(localPath.toPath())
+
+        git = Git.cloneRepository()
+                .setURI(remoteRepositoryUri)
+                .setDirectory(localPath)
+                .call()
+    }
 }

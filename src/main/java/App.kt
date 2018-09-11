@@ -1,14 +1,15 @@
+import JGit.JGitService
+
 fun main(args : Array<String>) {
     App()
 }
 
 class App {
 
-    init {
-        printStatement()
-    }
+    private val jGitService: JGitService
 
-    fun printStatement() {
-        println("Hello gitrics")
+    init {
+        val remoteRepositoryUri = "https://github.com/BradChes/kotlin-play.git"
+        jGitService = JGitService(remoteRepositoryUri)
     }
 }
