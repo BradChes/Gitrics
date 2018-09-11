@@ -2,7 +2,6 @@ package JGit
 
 import org.eclipse.jgit.api.Git
 import java.io.File
-import java.nio.file.Files
 
 class JGitService(remoteRepositoryUri: String) {
 
@@ -10,7 +9,7 @@ class JGitService(remoteRepositoryUri: String) {
 
     init {
         val localPath = File.createTempFile("JGitRepository", null)
-        Files.delete(localPath.toPath())
+        localPath.delete()
 
         git = Git.cloneRepository()
                 .setURI(remoteRepositoryUri)
