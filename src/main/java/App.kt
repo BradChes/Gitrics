@@ -1,14 +1,16 @@
+import jGit.Account
+import jGit.JGitService
+
 fun main(args : Array<String>) {
     App()
 }
 
 class App {
 
-    init {
-        printStatement()
-    }
+    private val jGitService: JGitService
 
-    fun printStatement() {
-        println("Hello gitrics")
+    init {
+        val remoteRepositoryUri = Account.REMOTE_REPO_URI
+        jGitService = JGitService(remoteRepositoryUri)
     }
 }
