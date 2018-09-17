@@ -25,6 +25,7 @@ class JGitService(remoteRepositoryUri: String) {
         System.out.println("Having repository: " + git.repository.directory)
 
         getListOfRemoteBranches()
+        getNumberOfRemoteBranches()
 
         System.out.println("Stopping service...")
     }
@@ -33,7 +34,13 @@ class JGitService(remoteRepositoryUri: String) {
         val branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
         for (branchRef in branchCall) {
-            System.out.print(branchRef.name + "\n")
+            System.out.println(branchRef.name)
         }
+    }
+
+    private fun getNumberOfRemoteBranches() {
+        val branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
+
+        System.out.println(branchCall.size)
     }
 }
