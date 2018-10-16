@@ -27,7 +27,6 @@ class JGitService(remoteRepositoryUri: String) {
                 .setDirectory(localPath)
                 .call()
 
-        System.out.println("Having repository: " + git.repository.directory)
         System.out.println("Using repository: " + git.repository.directory)
 
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
