@@ -1,15 +1,18 @@
 package services
 
 import Account
+import models.Branches
 import java.io.File.*
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListBranchCommand.*
+import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 
 
 class JGitService(remoteRepositoryUri: String) {
 
     private var git: Git
+    private var branchCall: List<Ref>
 
     init {
         System.out.println("launching service, please stand by...")
@@ -25,23 +28,29 @@ class JGitService(remoteRepositoryUri: String) {
 
         System.out.println("Having repository: " + git.repository.directory)
 
-        getListOfRemoteBranches()
-        getNumberOfRemoteBranches()
+        branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
         System.out.println("Stopping service...")
     }
 
-    private fun getListOfRemoteBranches() {
+    private fun getListOfRemoteBranches(): List<String> {
         val branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
+
+        val branchesList: ArrayList<String> = ArrayList()
 
         for (branchRef in branchCall) {
-            System.out.println(branchRef.name)
+            branchesList.add(branchRef.name)
         }
+        return branchesList
     }
 
-    private fun getNumberOfRemoteBranches() {
+    private fun getNumberOfRemoteBranches(): Int {
         val branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
-        System.out.println(branchCall.size)
+        return branchCall.size
+    }
+
+    fun createBranchesObject(): Branches {
+        return Branches(getListOfRemoteBranches(), getNumberOfRemoteBranches())
     }
 }
