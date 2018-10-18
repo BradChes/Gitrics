@@ -1,6 +1,6 @@
 package services
 
-import Account
+import models.Account
 import models.Branches
 import java.io.File.*
 import org.eclipse.jgit.api.Git
