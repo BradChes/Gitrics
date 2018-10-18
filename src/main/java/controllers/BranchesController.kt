@@ -1,9 +1,9 @@
 package controllers
 
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 class BranchesController {
-
-//    fun branches() =
+    @RequestMapping("/branches")
+    fun answer() = "Here be branches"
 }

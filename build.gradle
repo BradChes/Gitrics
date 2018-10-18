@@ -1,8 +1,8 @@
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.2.60'
-    id "kotlin-spring"
-    id'org.springframework.boot'
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.2.60'
+    id 'org.springframework.boot' version '2.0.6.RELEASE'
 }
 
 version '1.0-SNAPSHOT'
@@ -13,9 +13,10 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: '1.2.71'
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.7'
     implementation group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.0.3.201809091024-r'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.0.6.RELEASE'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.0.6.RELEASE'
 
     testImplementation 'junit:junit:4.12'
 }
