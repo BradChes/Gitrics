@@ -13,6 +13,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.7'
     implementation group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.0.3.201809091024-r'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.0.6.RELEASE'
 
     testImplementation 'junit:junit:4.12'
 }
