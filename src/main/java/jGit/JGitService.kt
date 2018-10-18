@@ -4,9 +4,7 @@ import java.io.File.*
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListBranchCommand.*
 import org.eclipse.jgit.lib.Ref
-import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
-import org.eclipse.jgit.treewalk.TreeWalk
 
 
 
