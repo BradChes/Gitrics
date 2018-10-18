@@ -15,8 +15,6 @@ class JGitService(remoteRepositoryUri: String) {
     private var branchCall: List<Ref>
 
     init {
-        System.out.println("launching service, please stand by...")
-
         val localPath = createTempFile("JGitRepository", null)
         localPath.delete()
 
@@ -26,11 +24,7 @@ class JGitService(remoteRepositoryUri: String) {
                 .setDirectory(localPath)
                 .call()
 
-        System.out.println("Having repository: " + git.repository.directory)
-
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
-
-        System.out.println("Stopping service...")
     }
 
     private fun getListOfRemoteBranches(): List<String> {
