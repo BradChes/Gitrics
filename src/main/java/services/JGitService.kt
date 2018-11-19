@@ -8,13 +8,17 @@ import org.eclipse.jgit.api.ListBranchCommand.*
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 
+interface GitService {
+    fun createBranchesObject(): Branches
+}
 
-class JGitService(remoteRepositoryUri: String) {
+class JGitService(remoteRepositoryUri: String): GitService {
 
     private var git: Git
     private var branchCall: List<Ref>
 
     init {
+        print("Starting JGit service...")
         val localPath = createTempFile("JGitRepository", null)
         localPath.delete()
 
@@ -44,7 +48,7 @@ class JGitService(remoteRepositoryUri: String) {
         return branchCall.size
     }
 
-    fun createBranchesObject(): Branches {
+    override fun createBranchesObject(): Branches {
         return Branches(getListOfRemoteBranches(), getNumberOfRemoteBranches())
     }
 }
