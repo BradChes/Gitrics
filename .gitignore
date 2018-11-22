@@ -3,10 +3,9 @@
 # IntelliJ project files
 .idea
 *.iml
+build
 out
+.gradle
 gen
 .gradle/.gitignore
 /src/main/java/JGit/Account.kt
-build/classes/
-build/kotlin/compileTestKotlin/caches-jvm/
-build/kotlin/sessions/
