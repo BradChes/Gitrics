@@ -11,14 +11,6 @@ import services.JGitService
 @EnableAutoConfiguration
 @Configuration
 class App {
-
-    private val jGitService: JGitService
-
-    init {
-        val remoteRepositoryUri = Account.REMOTE_REPO_URI
-        jGitService = JGitService(remoteRepositoryUri)
-    }
-
     @Bean
     fun branchesController() = BranchesController()
 }

@@ -15,7 +15,7 @@ interface GitService {
 class JGitService(remoteRepositoryUri: String): GitService {
 
     private var git: Git
-    private var branchCall: List<Ref>
+    private lateinit var branchCall: List<Ref>
 
     // Regex
     private val featRegex = "/\\bfeat\\b/".toRegex()
@@ -24,7 +24,6 @@ class JGitService(remoteRepositoryUri: String): GitService {
     private val otherRegex = "/\\b(spike|feat|fix)\\b/".toRegex()
 
     init {
-        print("Starting JGit service...")
         val localPath = createTempFile("JGitRepository", null)
         localPath.delete()
 
@@ -33,8 +32,6 @@ class JGitService(remoteRepositoryUri: String): GitService {
                 .setCredentialsProvider(UsernamePasswordCredentialsProvider(Account.USERNAME, Account.PASSWORD))
                 .setDirectory(localPath)
                 .call()
-
-        branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
     }
 
     private fun getListOfAllRemoteBranches(): List<String> {
@@ -139,6 +136,8 @@ class JGitService(remoteRepositoryUri: String): GitService {
     }
 
     override fun createBranchesObject(): Branches {
+        branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
+
         return Branches(getListOfAllRemoteBranches(),
                 getNumberOfAllRemoteBranches(),
                 getListOfAllFeatureBranches(),
