@@ -19,6 +19,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
 
     // Regex
     private val featRegex = "/\\bfeat\\b/".toRegex()
+    private val spikeRegex = "/\\bspike\\b/".toRegex()
 
     init {
         print("Starting JGit service...")
@@ -69,10 +70,34 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return featureCount
     }
 
+    private fun getListOfAllSpikeBranches(): List<String> {
+        val branchesList: ArrayList<String> = ArrayList()
+
+        for(branch in branchCall) {
+            if (branch.name.contains(spikeRegex)) {
+                branchesList.add(branch.name)
+            }
+        }
+        return branchesList
+    }
+
+    private fun getNumberOfAllSpikeBranches(): Int {
+        var spikeCount = 0
+
+        for(branch in branchCall) {
+            if (branch.name.contains(spikeRegex)) {
+                spikeCount++
+            }
+        }
+        return spikeCount
+    }
+
     override fun createBranchesObject(): Branches {
         return Branches(getListOfAllRemoteBranches(),
                 getNumberOfAllRemoteBranches(),
                 getListOfAllFeatureBranches(),
-                getNumberOfAllFeatureBranches())
+                getNumberOfAllFeatureBranches(),
+                getListOfAllSpikeBranches(),
+                getNumberOfAllSpikeBranches())
     }
 }
