@@ -1,4 +1,4 @@
 package models
 
-data class Branches(val listOfBranches: List<String>,
-                    val numberOfBranches: Int)
+data class Branches(val branches: List<String>,
+                    val allBranches: Int)
