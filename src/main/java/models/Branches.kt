@@ -7,4 +7,6 @@ data class Branches(val allBranchesList: List<String>,
                     val spikeBranchesList: List<String>,
                     val spikeBranchesSize: Int,
                     val fixBranchesList: List<String>,
-                    val fixBranchesSize: Int)
+                    val fixBranchesSize: Int,
+                    val otherBranchesList: List<String>,
+                    val otherBranchesSize: Int)

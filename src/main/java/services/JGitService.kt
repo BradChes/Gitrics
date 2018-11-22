@@ -21,6 +21,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
     private val featRegex = "/\\bfeat\\b/".toRegex()
     private val spikeRegex = "/\\bspike\\b/".toRegex()
     private val fixRegex = "/\\bfix\\b/".toRegex()
+    private val otherRegex = "/\\b(spike|feat|fix)\\b/".toRegex()
 
     init {
         print("Starting JGit service...")
@@ -115,6 +116,28 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return fixCount
     }
 
+    private fun getListOfAllOtherBranches(): List<String> {
+        val otherBranchesList: ArrayList<String> = ArrayList()
+
+        for(branch in branchCall) {
+            if (!branch.name.contains(otherRegex)) {
+                otherBranchesList.add(branch.name)
+            }
+        }
+        return otherBranchesList
+    }
+
+    private fun getNumberOfAllOtherBranches(): Int {
+        var otherCount = 0
+
+        for(branch in branchCall) {
+            if (!branch.name.contains(otherRegex)) {
+                otherCount++
+            }
+        }
+        return otherCount
+    }
+
     override fun createBranchesObject(): Branches {
         return Branches(getListOfAllRemoteBranches(),
                 getNumberOfAllRemoteBranches(),
@@ -123,6 +146,8 @@ class JGitService(remoteRepositoryUri: String): GitService {
                 getListOfAllSpikeBranches(),
                 getNumberOfAllSpikeBranches(),
                 getListOfAllFixBranches(),
-                getNumberOfAllFixBranches())
+                getNumberOfAllFixBranches(),
+                getListOfAllOtherBranches(),
+                getNumberOfAllOtherBranches())
     }
 }
