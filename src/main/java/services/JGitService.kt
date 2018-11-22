@@ -49,14 +49,14 @@ class JGitService(remoteRepositoryUri: String): GitService {
     }
 
     private fun getListOfAllFeatureBranches(): List<String> {
-        val branchesList: ArrayList<String> = ArrayList()
+        val featureBranchesList: ArrayList<String> = ArrayList()
 
         for(branch in branchCall) {
             if (branch.name.contains(featRegex)) {
-                branchesList.add(branch.name)
+                featureBranchesList.add(branch.name)
             }
         }
-        return branchesList
+        return featureBranchesList
     }
 
     private fun getNumberOfAllFeatureBranches(): Int {
@@ -71,14 +71,14 @@ class JGitService(remoteRepositoryUri: String): GitService {
     }
 
     private fun getListOfAllSpikeBranches(): List<String> {
-        val branchesList: ArrayList<String> = ArrayList()
+        val spikeBranchesList: ArrayList<String> = ArrayList()
 
         for(branch in branchCall) {
             if (branch.name.contains(spikeRegex)) {
-                branchesList.add(branch.name)
+                spikeBranchesList.add(branch.name)
             }
         }
-        return branchesList
+        return spikeBranchesList
     }
 
     private fun getNumberOfAllSpikeBranches(): Int {
