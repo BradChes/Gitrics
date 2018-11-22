@@ -1,4 +1,6 @@
 package models
 
-data class Branches(val branches: List<String>,
-                    val allBranches: Int)
+data class Branches(val allBranchesList: List<String>,
+                    val allBranchesSize: Int,
+                    val featureBranchesList: List<String>,
+                    val featureBranchesSize: Int)

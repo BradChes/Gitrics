@@ -17,6 +17,9 @@ class JGitService(remoteRepositoryUri: String): GitService {
     private var git: Git
     private var branchCall: List<Ref>
 
+    // Regex
+    private val featRegex = "/\\bfeat\\b/".toRegex()
+
     init {
         print("Starting JGit service...")
         val localPath = createTempFile("JGitRepository", null)
@@ -31,24 +34,45 @@ class JGitService(remoteRepositoryUri: String): GitService {
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
     }
 
-    private fun getListOfRemoteBranches(): List<String> {
-        val branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
-
+    private fun getListOfAllRemoteBranches(): List<String> {
         val branchesList: ArrayList<String> = ArrayList()
 
-        for (branchRef in branchCall) {
-            branchesList.add(branchRef.name)
+        for (branch in branchCall) {
+            branchesList.add(branch.name)
         }
         return branchesList
     }
 
-    private fun getNumberOfRemoteBranches(): Int {
-        val branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
-
+    private fun getNumberOfAllRemoteBranches(): Int {
         return branchCall.size
     }
 
+    private fun getListOfAllFeatureBranches(): List<String> {
+        val branchesList: ArrayList<String> = ArrayList()
+
+        for(branch in branchCall) {
+            if (branch.name.contains(featRegex)) {
+                branchesList.add(branch.name)
+            }
+        }
+        return branchesList
+    }
+
+    private fun getNumberOfAllFeatureBranches(): Int {
+        var featureCount = 0
+
+        for(branch in branchCall) {
+            if (branch.name.contains(featRegex)) {
+                featureCount++
+            }
+        }
+        return featureCount
+    }
+
     override fun createBranchesObject(): Branches {
-        return Branches(getListOfRemoteBranches(), getNumberOfRemoteBranches())
+        return Branches(getListOfAllRemoteBranches(),
+                getNumberOfAllRemoteBranches(),
+                getListOfAllFeatureBranches(),
+                getNumberOfAllFeatureBranches())
     }
 }
