@@ -5,6 +5,7 @@
 *.iml
 build
 out
+.gradle
 gen
 .gradle/.gitignore
 /src/main/java/JGit/Account.kt
