@@ -53,22 +53,23 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return branchCall.size
     }
 
-    private fun getListOfAllFeatureBranches(): List<String> {
-        val featureBranchesList: ArrayList<String> = ArrayList()
+    private fun listOfFeatureBranches(): List<Branch> {
+        val featureBranches= mutableListOf<Branch>()
 
-        for(branch in branchCall) {
-            if (branch.name.contains(featRegex)) {
-                featureBranchesList.add(branch.name)
+        for(ref in branchCall) {
+            if (ref.name.contains(featRegex)) {
+                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name))
+                featureBranches.add(branch)
             }
         }
-        return featureBranchesList
+        return featureBranches
     }
 
-    private fun getNumberOfAllFeatureBranches(): Int {
+    private fun numberOfFeatureBranches(): Int {
         var featureCount = 0
 
-        for(branch in branchCall) {
-            if (branch.name.contains(featRegex)) {
+        for(ref in branchCall) {
+            if (ref.name.contains(featRegex)) {
                 featureCount++
             }
         }
@@ -168,7 +169,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
 
         when(type) {
             BranchType.ALL -> return Branches(listOfRemoteBranches(), numberOfRemoteBranches())
-            BranchType.FEAT -> TODO()
+            BranchType.FEAT -> return Branches(listOfFeatureBranches(), numberOfFeatureBranches())
             BranchType.SPIKE -> TODO()
             BranchType.FIX -> TODO()
             BranchType.OTHER -> TODO()
@@ -176,8 +177,8 @@ class JGitService(remoteRepositoryUri: String): GitService {
 
 //        return Branches(listOfRemoteBranches(),
 //                numberOfRemoteBranches(),
-//                getListOfAllFeatureBranches(),
-//                getNumberOfAllFeatureBranches(),
+//                listOfFeatureBranches(),
+//                numberOfFeatureBranches(),
 //                getListOfAllSpikeBranches(),
 //                getNumberOfAllSpikeBranches(),
 //                getListOfAllFixBranches(),
