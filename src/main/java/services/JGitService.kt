@@ -42,7 +42,8 @@ class JGitService(remoteRepositoryUri: String): GitService {
         val branches = mutableListOf<Branch>()
 
         for (ref in branchCall) {
-            val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name))
+            val branchName = ref.name
+            val branch = Branch(branchName, whenBranchesWereFirstMade(branchName), hasBranchBeenMerged(branchName))
             branches.add(branch)
         }
         return branches
@@ -57,7 +58,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
 
         for(ref in branchCall) {
             if (ref.name.contains(featRegex)) {
-                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name))
+                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name), null)
                 featureBranches.add(branch)
             }
         }
@@ -80,7 +81,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
 
         for(ref in branchCall) {
             if (ref.name.contains(spikeRegex)) {
-                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name))
+                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name), null)
                 featureBranches.add(branch)
             }
         }
@@ -103,7 +104,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
 
         for(ref in branchCall) {
             if (ref.name.contains(fixRegex)) {
-                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name))
+                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name), null)
                 fixBranches.add(branch)
             }
         }
@@ -126,7 +127,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
 
         for(ref in branchCall) {
             if (!ref.name.contains(otherRegex)) {
-                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name))
+                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name), null)
                 otherBranches.add(branch)
             }
         }
