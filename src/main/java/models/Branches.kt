@@ -9,4 +9,5 @@ data class Branches(val allBranchesList: List<String>,
                     val fixBranchesList: List<String>,
                     val fixBranchesSize: Int,
                     val otherBranchesList: List<String>,
-                    val otherBranchesSize: Int)
+                    val otherBranchesSize: Int,
+                    val whenBranchesWereFirstMade: List<Branch>)

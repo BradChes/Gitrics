@@ -1,26 +1,15 @@
 package services
 
 import models.Account
+import models.Branch
 import models.Branches
 import java.io.File.*
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListBranchCommand.*
 import org.eclipse.jgit.lib.Ref
+import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import java.util.*
-import org.eclipse.jgit.revwalk.RevCommit
-import jdk.nashorn.internal.objects.NativeFunction.call
-import org.eclipse.jgit.internal.storage.file.FileRepository
-import org.eclipse.jgit.lib.PersonIdent
-import java.util.TimeZone
-
-
-
-
-
-
-
-
 
 
 interface GitService {
@@ -150,24 +139,39 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return otherCount
     }
 
-    private fun getWhenBranchesWereFirstMade() {
-        val treeName = "refs/remotes/origin/feat/get-when-braches-were-first-created"
-        for (commit in git.log()
-                .add(git.repository.resolve(treeName))
-                .not(git.repository.resolve("remotes/origin/master"))
-                .call()) {
+    private fun getWhenBranchesWereFirstMade(): List<Branch> {
+        branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
-            val authorIdent = commit.authorIdent
-            val authorDate = authorIdent.getWhen()
+        val list = mutableListOf<Branch>()
 
-            println(commit.shortMessage)
-            println(authorDate)
+        for (name in getListOfAllRemoteBranches()) {
+            if(!checkIfBranchHasBeenMerged(name)) {
+                val revCommit = git.log()
+                        .add(git.repository.resolve(name))
+                        .not(git.repository.resolve("remotes/origin/master"))
+                        .call().first()
+
+                val authorIdent = revCommit.authorIdent
+                val authorDate = authorIdent.getWhen()
+
+                println("$name was created on the $authorDate")
+
+                val branch = Branch(name, authorDate.toString())
+                list.add(branch)
+            }
         }
+        return list
+    }
+
+    private fun checkIfBranchHasBeenMerged(branchName: String): Boolean {
+        val revWalk = RevWalk(git.repository)
+        val masterHead = revWalk.parseCommit(git.repository.resolve("refs/remotes/origin/master"))
+        val branchHead = revWalk.parseCommit(git.repository.resolve(branchName))
+        return revWalk.isMergedInto(branchHead, masterHead)
     }
 
     override fun createBranchesObject(): Branches {
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
-        getWhenBranchesWereFirstMade()
 
         return Branches(getListOfAllRemoteBranches(),
                 getNumberOfAllRemoteBranches(),
@@ -178,6 +182,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
                 getListOfAllFixBranches(),
                 getNumberOfAllFixBranches(),
                 getListOfAllOtherBranches(),
-                getNumberOfAllOtherBranches())
+                getNumberOfAllOtherBranches(),
+                getWhenBranchesWereFirstMade())
     }
 }
