@@ -82,7 +82,6 @@ class JGitService(remoteRepositoryUri: String): GitService {
         for(ref in branchCall) {
             if (ref.name.contains(spikeRegex)) {
                 val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name))
-
                 featureBranches.add(branch)
             }
         }
@@ -100,22 +99,23 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return spikeCount
     }
 
-    private fun getListOfAllFixBranches(): List<String> {
-        val fixBranchesList: ArrayList<String> = ArrayList()
+    private fun getListOfAllFixBranches(): List<Branch> {
+        val fixBranches = mutableListOf<Branch>()
 
-        for(branch in branchCall) {
-            if (branch.name.contains(fixRegex)) {
-                fixBranchesList.add(branch.name)
+        for(ref in branchCall) {
+            if (ref.name.contains(fixRegex)) {
+                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name))
+                fixBranches.add(branch)
             }
         }
-        return fixBranchesList
+        return fixBranches
     }
 
-    private fun getNumberOfAllFixBranches(): Int {
+    private fun numberOfFixBranches(): Int {
         var fixCount = 0
 
-        for(branch in branchCall) {
-            if (branch.name.contains(fixRegex)) {
+        for(ref in branchCall) {
+            if (ref.name.contains(fixRegex)) {
                 fixCount++
             }
         }
@@ -173,7 +173,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
             BranchType.ALL -> Branches(listOfRemoteBranches(), numberOfRemoteBranches())
             BranchType.FEAT -> Branches(listOfFeatureBranches(), numberOfFeatureBranches())
             BranchType.SPIKE -> Branches(listOfSpikeBranches(), numberOfSpikeBranches())
-            BranchType.FIX -> TODO()
+            BranchType.FIX -> Branches(getListOfAllFixBranches(), numberOfFixBranches())
             BranchType.OTHER -> TODO()
         }
 
@@ -184,7 +184,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
 //                listOfSpikeBranches(),
 //                numberOfSpikeBranches(),
 //                getListOfAllFixBranches(),
-//                getNumberOfAllFixBranches(),
+//                numberOfFixBranches(),
 //                getListOfAllOtherBranches(),
 //                getNumberOfAllOtherBranches(),
 //                whenBranchesWereFirstMade())
