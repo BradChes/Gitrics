@@ -39,16 +39,17 @@ class JGitService(remoteRepositoryUri: String): GitService {
                 .call()
     }
 
-    private fun getListOfAllRemoteBranches(): List<String> {
-        val branchesList: ArrayList<String> = ArrayList()
+    private fun listOfRemoteBranches(): List<Branch> {
+        val branches = mutableListOf<Branch>()
 
-        for (branch in branchCall) {
-            branchesList.add(branch.name)
+        for (ref in branchCall) {
+            val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name))
+            branches.add(branch)
         }
-        return branchesList
+        return branches
     }
 
-    private fun getNumberOfAllRemoteBranches(): Int {
+    private fun numberOfRemoteBranches(): Int {
         return branchCall.size
     }
 
@@ -140,28 +141,19 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return otherCount
     }
 
-    private fun getWhenBranchesWereFirstMade(): List<Branch> {
-        branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
-
-        val list = mutableListOf<Branch>()
-
-        for (name in getListOfAllRemoteBranches()) {
-            if(!hasBranchBeenMerged(name)) {
+    private fun whenBranchesWereFirstMade(branchName: String): String? {
+            if(!hasBranchBeenMerged(branchName)) {
                 val revCommit = git.log()
-                        .add(git.repository.resolve(name))
+                        .add(git.repository.resolve(branchName))
                         .not(git.repository.resolve("remotes/origin/master"))
                         .call().first()
 
                 val authorIdent = revCommit.authorIdent
                 val authorDate = authorIdent.getWhen()
 
-                println("$name was created on the $authorDate")
-
-                val branch = Branch(name, authorDate.toString())
-                list.add(branch)
+                return authorDate.toString()
             }
-        }
-        return list
+        return null
     }
 
     private fun hasBranchBeenMerged(branchName: String): Boolean {
@@ -175,15 +167,15 @@ class JGitService(remoteRepositoryUri: String): GitService {
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
         when(type) {
-            BranchType.ALL -> return Branches(getListOfAllRemoteBranches(), getNumberOfAllRemoteBranches())
+            BranchType.ALL -> return Branches(listOfRemoteBranches(), numberOfRemoteBranches())
             BranchType.FEAT -> TODO()
             BranchType.SPIKE -> TODO()
             BranchType.FIX -> TODO()
             BranchType.OTHER -> TODO()
         }
 
-//        return Branches(getListOfAllRemoteBranches(),
-//                getNumberOfAllRemoteBranches(),
+//        return Branches(listOfRemoteBranches(),
+//                numberOfRemoteBranches(),
 //                getListOfAllFeatureBranches(),
 //                getNumberOfAllFeatureBranches(),
 //                getListOfAllSpikeBranches(),
@@ -192,6 +184,6 @@ class JGitService(remoteRepositoryUri: String): GitService {
 //                getNumberOfAllFixBranches(),
 //                getListOfAllOtherBranches(),
 //                getNumberOfAllOtherBranches(),
-//                getWhenBranchesWereFirstMade())
+//                whenBranchesWereFirstMade())
     }
 }

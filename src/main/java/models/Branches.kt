@@ -12,5 +12,5 @@ package models
 //                    val otherBranchesSize: Int,
 //                    val whenBranchesWereFirstMade: List<Branch>)
 
-data class Branches(val branches: List<String>,
+data class Branches(val branches: List<Branch>,
                     val size: Int)
