@@ -145,7 +145,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
         val list = mutableListOf<Branch>()
 
         for (name in getListOfAllRemoteBranches()) {
-            if(!checkIfBranchHasBeenMerged(name)) {
+            if(!hasBranchBeenMerged(name)) {
                 val revCommit = git.log()
                         .add(git.repository.resolve(name))
                         .not(git.repository.resolve("remotes/origin/master"))
@@ -163,7 +163,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return list
     }
 
-    private fun checkIfBranchHasBeenMerged(branchName: String): Boolean {
+    private fun hasBranchBeenMerged(branchName: String): Boolean {
         val revWalk = RevWalk(git.repository)
         val masterHead = revWalk.parseCommit(git.repository.resolve("refs/remotes/origin/master"))
         val branchHead = revWalk.parseCommit(git.repository.resolve(branchName))
