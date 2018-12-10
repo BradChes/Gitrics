@@ -21,4 +21,32 @@ class BranchesController {
         return jGitService.createBranchesObject()
     }
 
+    @RequestMapping("/branches/feat")
+    fun getFeatBranches(): Branches {
+        return jGitService.createBranchesObject()
+    }
+
+    @RequestMapping("/branches/spike")
+    fun getSpikeBranches(): Branches {
+        return jGitService.createBranchesObject()
+    }
+
+    @RequestMapping("/branches/fix")
+    fun getFixBranches(): Branches {
+        return jGitService.createBranchesObject()
+    }
+
+    @RequestMapping("/branches/other")
+    fun getOtherBranches(): Branches {
+        return jGitService.createBranchesObject()
+    }
+
+}
+
+enum class BranchType {
+    ALL,
+    FEAT,
+    SPIKE,
+    FIX,
+    OTHER
 }

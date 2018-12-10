@@ -11,3 +11,6 @@ data class Branches(val allBranchesList: List<String>,
                     val otherBranchesList: List<String>,
                     val otherBranchesSize: Int,
                     val whenBranchesWereFirstMade: List<Branch>)
+
+data class Branches2(val list: List<Branch>,
+                     val size: Int)
