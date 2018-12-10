@@ -11,6 +11,10 @@ import java.util.*
 import org.eclipse.jgit.revwalk.RevCommit
 import jdk.nashorn.internal.objects.NativeFunction.call
 import org.eclipse.jgit.internal.storage.file.FileRepository
+import org.eclipse.jgit.lib.PersonIdent
+import java.util.TimeZone
+
+
 
 
 
@@ -147,12 +151,17 @@ class JGitService(remoteRepositoryUri: String): GitService {
     }
 
     private fun getWhenBranchesWereFirstMade() {
-        val treeName = "remotes/origin/feat/get-when-braches-were-first-created" // tag or branch
+        val treeName = "refs/remotes/origin/feat/get-when-braches-were-first-created"
         for (commit in git.log()
                 .add(git.repository.resolve(treeName))
                 .not(git.repository.resolve("remotes/origin/master"))
                 .call()) {
+
+            val authorIdent = commit.authorIdent
+            val authorDate = authorIdent.getWhen()
+
             println(commit.shortMessage)
+            println(authorDate)
         }
     }
 
