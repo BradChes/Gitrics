@@ -1,12 +1,16 @@
 package services
 
 import models.Account
+import models.Branch
 import models.Branches
 import java.io.File.*
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListBranchCommand.*
 import org.eclipse.jgit.lib.Ref
+import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
+import java.util.*
+
 
 interface GitService {
     fun createBranchesObject(): Branches
@@ -15,10 +19,15 @@ interface GitService {
 class JGitService(remoteRepositoryUri: String): GitService {
 
     private var git: Git
-    private var branchCall: List<Ref>
+    private lateinit var branchCall: List<Ref>
+
+    // Regex
+    private val featRegex = "/\\bfeat\\b/".toRegex()
+    private val spikeRegex = "/\\bspike\\b/".toRegex()
+    private val fixRegex = "/\\bfix\\b/".toRegex()
+    private val otherRegex = "/\\b(spike|feat|fix)\\b/".toRegex()
 
     init {
-        print("Starting JGit service...")
         val localPath = createTempFile("JGitRepository", null)
         localPath.delete()
 
@@ -27,28 +36,153 @@ class JGitService(remoteRepositoryUri: String): GitService {
                 .setCredentialsProvider(UsernamePasswordCredentialsProvider(Account.USERNAME, Account.PASSWORD))
                 .setDirectory(localPath)
                 .call()
-
-        branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
     }
 
-    private fun getListOfRemoteBranches(): List<String> {
-        val branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
-
+    private fun getListOfAllRemoteBranches(): List<String> {
         val branchesList: ArrayList<String> = ArrayList()
 
-        for (branchRef in branchCall) {
-            branchesList.add(branchRef.name)
+        for (branch in branchCall) {
+            branchesList.add(branch.name)
         }
         return branchesList
     }
 
-    private fun getNumberOfRemoteBranches(): Int {
-        val branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
-
+    private fun getNumberOfAllRemoteBranches(): Int {
         return branchCall.size
     }
 
+    private fun getListOfAllFeatureBranches(): List<String> {
+        val featureBranchesList: ArrayList<String> = ArrayList()
+
+        for(branch in branchCall) {
+            if (branch.name.contains(featRegex)) {
+                featureBranchesList.add(branch.name)
+            }
+        }
+        return featureBranchesList
+    }
+
+    private fun getNumberOfAllFeatureBranches(): Int {
+        var featureCount = 0
+
+        for(branch in branchCall) {
+            if (branch.name.contains(featRegex)) {
+                featureCount++
+            }
+        }
+        return featureCount
+    }
+
+    private fun getListOfAllSpikeBranches(): List<String> {
+        val spikeBranchesList: ArrayList<String> = ArrayList()
+
+        for(branch in branchCall) {
+            if (branch.name.contains(spikeRegex)) {
+                spikeBranchesList.add(branch.name)
+            }
+        }
+        return spikeBranchesList
+    }
+
+    private fun getNumberOfAllSpikeBranches(): Int {
+        var spikeCount = 0
+
+        for(branch in branchCall) {
+            if (branch.name.contains(spikeRegex)) {
+                spikeCount++
+            }
+        }
+        return spikeCount
+    }
+
+    private fun getListOfAllFixBranches(): List<String> {
+        val fixBranchesList: ArrayList<String> = ArrayList()
+
+        for(branch in branchCall) {
+            if (branch.name.contains(fixRegex)) {
+                fixBranchesList.add(branch.name)
+            }
+        }
+        return fixBranchesList
+    }
+
+    private fun getNumberOfAllFixBranches(): Int {
+        var fixCount = 0
+
+        for(branch in branchCall) {
+            if (branch.name.contains(fixRegex)) {
+                fixCount++
+            }
+        }
+        return fixCount
+    }
+
+    private fun getListOfAllOtherBranches(): List<String> {
+        val otherBranchesList: ArrayList<String> = ArrayList()
+
+        for(branch in branchCall) {
+            if (!branch.name.contains(otherRegex)) {
+                otherBranchesList.add(branch.name)
+            }
+        }
+        return otherBranchesList
+    }
+
+    private fun getNumberOfAllOtherBranches(): Int {
+        var otherCount = 0
+
+        for(branch in branchCall) {
+            if (!branch.name.contains(otherRegex)) {
+                otherCount++
+            }
+        }
+        return otherCount
+    }
+
+    private fun getWhenBranchesWereFirstMade(): List<Branch> {
+        branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
+
+        val list = mutableListOf<Branch>()
+
+        for (name in getListOfAllRemoteBranches()) {
+            if(!checkIfBranchHasBeenMerged(name)) {
+                val revCommit = git.log()
+                        .add(git.repository.resolve(name))
+                        .not(git.repository.resolve("remotes/origin/master"))
+                        .call().first()
+
+                val authorIdent = revCommit.authorIdent
+                val authorDate = authorIdent.getWhen()
+
+                println("$name was created on the $authorDate")
+
+                val branch = Branch(name, authorDate.toString())
+                list.add(branch)
+            }
+        }
+        return list
+    }
+
+    private fun checkIfBranchHasBeenMerged(branchName: String): Boolean {
+        val revWalk = RevWalk(git.repository)
+        val masterHead = revWalk.parseCommit(git.repository.resolve("refs/remotes/origin/master"))
+        val branchHead = revWalk.parseCommit(git.repository.resolve(branchName))
+        return revWalk.isMergedInto(branchHead, masterHead)
+    }
+
     override fun createBranchesObject(): Branches {
-        return Branches(getListOfRemoteBranches(), getNumberOfRemoteBranches())
+        branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
+
+        return Branches(getListOfAllRemoteBranches(),
+                getNumberOfAllRemoteBranches(),
+                getListOfAllFeatureBranches(),
+                getNumberOfAllFeatureBranches(),
+                getListOfAllSpikeBranches(),
+                getNumberOfAllSpikeBranches(),
+                getListOfAllFixBranches(),
+                getNumberOfAllFixBranches(),
+                getListOfAllOtherBranches(),
+                getNumberOfAllOtherBranches(),
+                getWhenBranchesWereFirstMade())
     }
 }
