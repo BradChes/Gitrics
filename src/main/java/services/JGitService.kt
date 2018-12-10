@@ -76,22 +76,24 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return featureCount
     }
 
-    private fun getListOfAllSpikeBranches(): List<String> {
-        val spikeBranchesList: ArrayList<String> = ArrayList()
+    private fun listOfSpikeBranches(): List<Branch> {
+        val featureBranches= mutableListOf<Branch>()
 
-        for(branch in branchCall) {
-            if (branch.name.contains(spikeRegex)) {
-                spikeBranchesList.add(branch.name)
+        for(ref in branchCall) {
+            if (ref.name.contains(spikeRegex)) {
+                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name))
+
+                featureBranches.add(branch)
             }
         }
-        return spikeBranchesList
+        return featureBranches
     }
 
-    private fun getNumberOfAllSpikeBranches(): Int {
+    private fun numberOfSpikeBranches(): Int {
         var spikeCount = 0
 
-        for(branch in branchCall) {
-            if (branch.name.contains(spikeRegex)) {
+        for(ref in branchCall) {
+            if (ref.name.contains(spikeRegex)) {
                 spikeCount++
             }
         }
@@ -167,10 +169,10 @@ class JGitService(remoteRepositoryUri: String): GitService {
     override fun createBranchesObject(type: BranchType): Branches {
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
-        when(type) {
-            BranchType.ALL -> return Branches(listOfRemoteBranches(), numberOfRemoteBranches())
-            BranchType.FEAT -> return Branches(listOfFeatureBranches(), numberOfFeatureBranches())
-            BranchType.SPIKE -> TODO()
+        return when(type) {
+            BranchType.ALL -> Branches(listOfRemoteBranches(), numberOfRemoteBranches())
+            BranchType.FEAT -> Branches(listOfFeatureBranches(), numberOfFeatureBranches())
+            BranchType.SPIKE -> Branches(listOfSpikeBranches(), numberOfSpikeBranches())
             BranchType.FIX -> TODO()
             BranchType.OTHER -> TODO()
         }
@@ -179,8 +181,8 @@ class JGitService(remoteRepositoryUri: String): GitService {
 //                numberOfRemoteBranches(),
 //                listOfFeatureBranches(),
 //                numberOfFeatureBranches(),
-//                getListOfAllSpikeBranches(),
-//                getNumberOfAllSpikeBranches(),
+//                listOfSpikeBranches(),
+//                numberOfSpikeBranches(),
 //                getListOfAllFixBranches(),
 //                getNumberOfAllFixBranches(),
 //                getListOfAllOtherBranches(),
