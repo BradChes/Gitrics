@@ -1,5 +1,6 @@
 package services
 
+import controllers.BranchType
 import models.Account
 import models.Branch
 import models.Branches
@@ -13,7 +14,7 @@ import java.util.*
 
 
 interface GitService {
-    fun createBranchesObject(): Branches
+    fun createBranchesObject(type: BranchType): Branches
 }
 
 class JGitService(remoteRepositoryUri: String): GitService {
@@ -170,19 +171,27 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return revWalk.isMergedInto(branchHead, masterHead)
     }
 
-    override fun createBranchesObject(): Branches {
+    override fun createBranchesObject(type: BranchType): Branches {
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
-        return Branches(getListOfAllRemoteBranches(),
-                getNumberOfAllRemoteBranches(),
-                getListOfAllFeatureBranches(),
-                getNumberOfAllFeatureBranches(),
-                getListOfAllSpikeBranches(),
-                getNumberOfAllSpikeBranches(),
-                getListOfAllFixBranches(),
-                getNumberOfAllFixBranches(),
-                getListOfAllOtherBranches(),
-                getNumberOfAllOtherBranches(),
-                getWhenBranchesWereFirstMade())
+        when(type) {
+            BranchType.ALL -> return Branches(getListOfAllRemoteBranches(), getNumberOfAllRemoteBranches())
+            BranchType.FEAT -> TODO()
+            BranchType.SPIKE -> TODO()
+            BranchType.FIX -> TODO()
+            BranchType.OTHER -> TODO()
+        }
+
+//        return Branches(getListOfAllRemoteBranches(),
+//                getNumberOfAllRemoteBranches(),
+//                getListOfAllFeatureBranches(),
+//                getNumberOfAllFeatureBranches(),
+//                getListOfAllSpikeBranches(),
+//                getNumberOfAllSpikeBranches(),
+//                getListOfAllFixBranches(),
+//                getNumberOfAllFixBranches(),
+//                getListOfAllOtherBranches(),
+//                getNumberOfAllOtherBranches(),
+//                getWhenBranchesWereFirstMade())
     }
 }
