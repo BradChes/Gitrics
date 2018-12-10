@@ -7,6 +7,17 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListBranchCommand.*
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
+import java.util.*
+import org.eclipse.jgit.revwalk.RevCommit
+import jdk.nashorn.internal.objects.NativeFunction.call
+import org.eclipse.jgit.internal.storage.file.FileRepository
+
+
+
+
+
+
+
 
 interface GitService {
     fun createBranchesObject(): Branches
@@ -135,8 +146,19 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return otherCount
     }
 
+    private fun getWhenBranchesWereFirstMade() {
+        val treeName = "remotes/origin/feat/get-when-braches-were-first-created" // tag or branch
+        for (commit in git.log()
+                .add(git.repository.resolve(treeName))
+                .not(git.repository.resolve("remotes/origin/master"))
+                .call()) {
+            println(commit.shortMessage)
+        }
+    }
+
     override fun createBranchesObject(): Branches {
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
+        getWhenBranchesWereFirstMade()
 
         return Branches(getListOfAllRemoteBranches(),
                 getNumberOfAllRemoteBranches(),
