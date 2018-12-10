@@ -175,6 +175,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
             BranchType.SPIKE -> Branches(listOfSpikeBranches(), numberOfSpikeBranches())
             BranchType.FIX -> Branches(listOfFixBranches(), numberOfFixBranches())
             BranchType.OTHER -> Branches(listOfOtherBranches(), numberOfOtherBranches())
+            BranchType.UNMERGED -> TODO()
         }
     }
 }
