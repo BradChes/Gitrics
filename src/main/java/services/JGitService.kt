@@ -10,7 +10,6 @@ import org.eclipse.jgit.api.ListBranchCommand.*
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
-import java.util.*
 
 
 interface GitService {
@@ -99,7 +98,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return spikeCount
     }
 
-    private fun getListOfAllFixBranches(): List<Branch> {
+    private fun listOfFixBranches(): List<Branch> {
         val fixBranches = mutableListOf<Branch>()
 
         for(ref in branchCall) {
@@ -122,22 +121,23 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return fixCount
     }
 
-    private fun getListOfAllOtherBranches(): List<String> {
-        val otherBranchesList: ArrayList<String> = ArrayList()
+    private fun listOfOtherBranches(): List<Branch> {
+        val otherBranches = mutableListOf<Branch>()
 
-        for(branch in branchCall) {
-            if (!branch.name.contains(otherRegex)) {
-                otherBranchesList.add(branch.name)
+        for(ref in branchCall) {
+            if (!ref.name.contains(otherRegex)) {
+                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name))
+                otherBranches.add(branch)
             }
         }
-        return otherBranchesList
+        return otherBranches
     }
 
-    private fun getNumberOfAllOtherBranches(): Int {
+    private fun numberOfOtherBranches(): Int {
         var otherCount = 0
 
-        for(branch in branchCall) {
-            if (!branch.name.contains(otherRegex)) {
+        for(ref in branchCall) {
+            if (!ref.name.contains(otherRegex)) {
                 otherCount++
             }
         }
@@ -173,20 +173,8 @@ class JGitService(remoteRepositoryUri: String): GitService {
             BranchType.ALL -> Branches(listOfRemoteBranches(), numberOfRemoteBranches())
             BranchType.FEAT -> Branches(listOfFeatureBranches(), numberOfFeatureBranches())
             BranchType.SPIKE -> Branches(listOfSpikeBranches(), numberOfSpikeBranches())
-            BranchType.FIX -> Branches(getListOfAllFixBranches(), numberOfFixBranches())
-            BranchType.OTHER -> TODO()
+            BranchType.FIX -> Branches(listOfFixBranches(), numberOfFixBranches())
+            BranchType.OTHER -> Branches(listOfOtherBranches(), numberOfOtherBranches())
         }
-
-//        return Branches(listOfRemoteBranches(),
-//                numberOfRemoteBranches(),
-//                listOfFeatureBranches(),
-//                numberOfFeatureBranches(),
-//                listOfSpikeBranches(),
-//                numberOfSpikeBranches(),
-//                getListOfAllFixBranches(),
-//                numberOfFixBranches(),
-//                getListOfAllOtherBranches(),
-//                getNumberOfAllOtherBranches(),
-//                whenBranchesWereFirstMade())
     }
 }
