@@ -41,6 +41,11 @@ class BranchesController {
         return jGitService.createBranchesObject(BranchType.OTHER)
     }
 
+    @RequestMapping("/branches/unmerged")
+    fun getUnmergedBranches(): Branches {
+        return jGitService.createBranchesObject(BranchType.UNMERGED)
+    }
+
 }
 
 enum class BranchType {
@@ -48,5 +53,6 @@ enum class BranchType {
     FEAT,
     SPIKE,
     FIX,
-    OTHER
+    OTHER,
+    UNMERGED
 }

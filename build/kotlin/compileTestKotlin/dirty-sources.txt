@@ -1,1 +1,0 @@
-/Users/cheswb51/PersonalProgramming/IntelliJWorkspace/com.gitrics/src/test/java/AppTest.kt
