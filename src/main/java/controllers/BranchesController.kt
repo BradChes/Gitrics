@@ -46,6 +46,11 @@ class BranchesController {
         return jGitService.createBranchesObject(BranchType.UNMERGED)
     }
 
+    @RequestMapping("/branches/stale")
+    fun getStaleBranches(): Branches {
+        return jGitService.createBranchesObject(BranchType.STALE)
+    }
+
 }
 
 enum class BranchType {
@@ -54,5 +59,6 @@ enum class BranchType {
     SPIKE,
     FIX,
     OTHER,
-    UNMERGED
+    UNMERGED,
+    STALE
 }
