@@ -149,7 +149,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
                 val revCommit = git.log()
                         .add(git.repository.resolve(branchName))
                         .not(git.repository.resolve("remotes/origin/master"))
-                        .call().first()
+                        .call().last()
 
                 val authorIdent = revCommit.authorIdent
                 val authorDate = authorIdent.getWhen()
