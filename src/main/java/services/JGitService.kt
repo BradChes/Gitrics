@@ -57,8 +57,9 @@ class JGitService(remoteRepositoryUri: String): GitService {
         val featureBranches= mutableListOf<Branch>()
 
         for(ref in branchCall) {
+            val branchName = ref.name
             if (ref.name.contains(featRegex)) {
-                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name), null)
+                val branch = Branch(ref.name, whenBranchesWereFirstMade(branchName), hasBranchBeenMerged(branchName))
                 featureBranches.add(branch)
             }
         }
@@ -80,8 +81,9 @@ class JGitService(remoteRepositoryUri: String): GitService {
         val featureBranches= mutableListOf<Branch>()
 
         for(ref in branchCall) {
+            val branchName = ref.name
             if (ref.name.contains(spikeRegex)) {
-                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name), null)
+                val branch = Branch(ref.name, whenBranchesWereFirstMade(branchName), hasBranchBeenMerged(branchName))
                 featureBranches.add(branch)
             }
         }
@@ -101,10 +103,10 @@ class JGitService(remoteRepositoryUri: String): GitService {
 
     private fun listOfFixBranches(): List<Branch> {
         val fixBranches = mutableListOf<Branch>()
-
         for(ref in branchCall) {
+            val branchName = ref.name
             if (ref.name.contains(fixRegex)) {
-                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name), null)
+                val branch = Branch(ref.name, whenBranchesWereFirstMade(branchName), hasBranchBeenMerged(branchName))
                 fixBranches.add(branch)
             }
         }
@@ -127,7 +129,8 @@ class JGitService(remoteRepositoryUri: String): GitService {
 
         for(ref in branchCall) {
             if (!ref.name.contains(otherRegex)) {
-                val branch = Branch(ref.name, whenBranchesWereFirstMade(ref.name), null)
+                val branchName = ref.name
+                val branch = Branch(ref.name, whenBranchesWereFirstMade(branchName), hasBranchBeenMerged(branchName))
                 otherBranches.add(branch)
             }
         }
@@ -138,11 +141,35 @@ class JGitService(remoteRepositoryUri: String): GitService {
         var otherCount = 0
 
         for(ref in branchCall) {
-            if (!ref.name.contains(otherRegex)) {
-                otherCount++
-            }
+
+            otherCount++
         }
         return otherCount
+    }
+
+    private fun listOfUnmergedBranches(): List<Branch> {
+        val unmergedBranches = mutableListOf<Branch>()
+
+        for(ref in branchCall) {
+            val branchName = ref.name
+            val hasBeenMerged = hasBranchBeenMerged(branchName)
+            if(!hasBeenMerged) {
+                val branch = Branch(ref.name, whenBranchesWereFirstMade(branchName), hasBeenMerged)
+                unmergedBranches.add(branch)
+            }
+        }
+        return unmergedBranches
+    }
+
+    private fun numberOfUnmergedBranches(): Int {
+        var unmergedCount = 0
+
+        for(ref in branchCall) {
+            if (!hasBranchBeenMerged(ref.name)) {
+                unmergedCount++
+            }
+        }
+        return unmergedCount
     }
 
     private fun whenBranchesWereFirstMade(branchName: String): String? {
@@ -176,7 +203,7 @@ class JGitService(remoteRepositoryUri: String): GitService {
             BranchType.SPIKE -> Branches(listOfSpikeBranches(), numberOfSpikeBranches())
             BranchType.FIX -> Branches(listOfFixBranches(), numberOfFixBranches())
             BranchType.OTHER -> Branches(listOfOtherBranches(), numberOfOtherBranches())
-            BranchType.UNMERGED -> TODO()
+            BranchType.UNMERGED -> Branches(listOfUnmergedBranches(), numberOfUnmergedBranches())
         }
     }
 }
