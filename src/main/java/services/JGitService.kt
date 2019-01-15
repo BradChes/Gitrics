@@ -44,7 +44,10 @@ class JGitService(remoteRepositoryUri: String): GitService {
 
         for (ref in branchCall) {
             val branchName = ref.name
-            val branch = Branch(branchName, whenBranchesWereFirstMade(branchName), hasBranchBeenMerged(branchName), hasBranchGoneStale())
+            val branch = Branch(branchName, whenBranchesWereFirstMade(branchName),
+                    lastCommitOnBranch(branchName),
+                    hasBranchBeenMerged(branchName),
+                    hasBranchGoneStale())
             branches.add(branch)
         }
         return branches
@@ -60,7 +63,10 @@ class JGitService(remoteRepositoryUri: String): GitService {
         for(ref in branchCall) {
             val branchName = ref.name
             if (branchName.contains(featRegex)) {
-                val branch = Branch(branchName, whenBranchesWereFirstMade(branchName), hasBranchBeenMerged(branchName), hasBranchGoneStale())
+                val branch = Branch(branchName, whenBranchesWereFirstMade(branchName),
+                        lastCommitOnBranch(branchName),
+                        hasBranchBeenMerged(branchName),
+                        hasBranchGoneStale())
                 featureBranches.add(branch)
             }
         }
@@ -84,7 +90,10 @@ class JGitService(remoteRepositoryUri: String): GitService {
         for(ref in branchCall) {
             val branchName = ref.name
             if (branchName.contains(spikeRegex)) {
-                val branch = Branch(branchName, whenBranchesWereFirstMade(branchName), hasBranchBeenMerged(branchName), hasBranchGoneStale())
+                val branch = Branch(branchName, whenBranchesWereFirstMade(branchName),
+                        lastCommitOnBranch(branchName),
+                        hasBranchBeenMerged(branchName),
+                        hasBranchGoneStale())
                 featureBranches.add(branch)
             }
         }
@@ -107,7 +116,10 @@ class JGitService(remoteRepositoryUri: String): GitService {
         for(ref in branchCall) {
             val branchName = ref.name
             if (branchName.contains(fixRegex)) {
-                val branch = Branch(branchName, whenBranchesWereFirstMade(branchName), hasBranchBeenMerged(branchName), hasBranchGoneStale())
+                val branch = Branch(branchName, whenBranchesWereFirstMade(branchName),
+                        lastCommitOnBranch(branchName),
+                        hasBranchBeenMerged(branchName),
+                        hasBranchGoneStale())
                 fixBranches.add(branch)
             }
         }
@@ -131,7 +143,10 @@ class JGitService(remoteRepositoryUri: String): GitService {
         for(ref in branchCall) {
             val branchName = ref.name
             if (!branchName.contains(otherRegex)) {
-                val branch = Branch(branchName, whenBranchesWereFirstMade(branchName), hasBranchBeenMerged(branchName), hasBranchGoneStale())
+                val branch = Branch(branchName, whenBranchesWereFirstMade(branchName),
+                        lastCommitOnBranch(branchName),
+                        hasBranchBeenMerged(branchName),
+                        hasBranchGoneStale())
                 otherBranches.add(branch)
             }
         }
@@ -155,7 +170,11 @@ class JGitService(remoteRepositoryUri: String): GitService {
             val branchName = ref.name
             val hasBeenMerged = hasBranchBeenMerged(branchName)
             if(!hasBeenMerged) {
-                val branch = Branch(branchName, whenBranchesWereFirstMade(branchName), hasBeenMerged, hasBranchGoneStale())
+                val branch = Branch(branchName,
+                        whenBranchesWereFirstMade(branchName),
+                        lastCommitOnBranch(branchName),
+                        hasBeenMerged,
+                        hasBranchGoneStale())
                 unmergedBranches.add(branch)
             }
         }
@@ -182,11 +201,34 @@ class JGitService(remoteRepositoryUri: String): GitService {
             val branchName = ref.name
             val hasBeenMerged = hasBranchBeenMerged(branchName)
             if(!hasBeenMerged) {
-                val branch = Branch(branchName, whenBranchesWereFirstMade(branchName), hasBeenMerged, hasBranchGoneStale())
+                val branch = Branch(branchName,
+                        whenBranchesWereFirstMade(branchName),
+                        lastCommitOnBranch(branchName),
+                        hasBeenMerged,
+                        hasBranchGoneStale())
                 staleBranches.add(branch)
             }
         }
         return staleBranches
+    }
+
+
+    private fun hasBranchGoneStale(): Boolean {
+
+        return false
+    }
+
+    private fun lastCommitOnBranch(branchName: String): String? {
+        if(!hasBranchBeenMerged(branchName)) {
+            val revCommit = git.log()
+                    .add(git.repository.resolve(branchName))
+                    .not(git.repository.resolve("remotes/origin/master"))
+                    .call().first()
+
+            val authorIdent = revCommit.authorIdent
+            return authorIdent.getWhen().toString()
+        }
+        return null
     }
 
     private fun whenBranchesWereFirstMade(branchName: String): String? {
@@ -207,10 +249,6 @@ class JGitService(remoteRepositoryUri: String): GitService {
         val masterHead = revWalk.parseCommit(git.repository.resolve("refs/remotes/origin/master"))
         val branchHead = revWalk.parseCommit(git.repository.resolve(branchName))
         return revWalk.isMergedInto(branchHead, masterHead)
-    }
-
-    private fun hasBranchGoneStale(): Boolean {
-        return false
     }
 
     override fun createBranchesObject(type: BranchType): Branches {
