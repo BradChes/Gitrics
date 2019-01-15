@@ -54,5 +54,6 @@ enum class BranchType {
     SPIKE,
     FIX,
     OTHER,
-    UNMERGED
+    UNMERGED,
+    STALE
 }
