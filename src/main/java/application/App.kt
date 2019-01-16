@@ -6,11 +6,11 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 
-@EnableAutoConfiguration
-@Configuration
-class App {
-    @Bean
-    fun branchesController() = BranchesController()
-}
+//@EnableAutoConfiguration
+//@Configuration
+//class App {
+//    @Bean
+//    fun branchesController() = BranchesController()
+//}
 
 
