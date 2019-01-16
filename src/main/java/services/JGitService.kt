@@ -54,10 +54,6 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return branches
     }
 
-    private fun numberOfRemoteBranches(): Int {
-        return branchCall.size
-    }
-
     private fun listOfFeatureBranches(): List<Branch> {
         val featureBranches= mutableListOf<Branch>()
 
@@ -72,17 +68,6 @@ class JGitService(remoteRepositoryUri: String): GitService {
             }
         }
         return featureBranches
-    }
-
-    private fun numberOfFeatureBranches(): Int {
-        var featureCount = 0
-
-        for(ref in branchCall) {
-            if (ref.name.contains(featRegex)) {
-                featureCount++
-            }
-        }
-        return featureCount
     }
 
     private fun listOfSpikeBranches(): List<Branch> {
@@ -101,17 +86,6 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return featureBranches
     }
 
-    private fun numberOfSpikeBranches(): Int {
-        var spikeCount = 0
-
-        for(ref in branchCall) {
-            if (ref.name.contains(spikeRegex)) {
-                spikeCount++
-            }
-        }
-        return spikeCount
-    }
-
     private fun listOfFixBranches(): List<Branch> {
         val fixBranches = mutableListOf<Branch>()
         for(ref in branchCall) {
@@ -125,17 +99,6 @@ class JGitService(remoteRepositoryUri: String): GitService {
             }
         }
         return fixBranches
-    }
-
-    private fun numberOfFixBranches(): Int {
-        var fixCount = 0
-
-        for(ref in branchCall) {
-            if (ref.name.contains(fixRegex)) {
-                fixCount++
-            }
-        }
-        return fixCount
     }
 
     private fun listOfOtherBranches(): List<Branch> {
@@ -152,16 +115,6 @@ class JGitService(remoteRepositoryUri: String): GitService {
             }
         }
         return otherBranches
-    }
-
-    private fun numberOfOtherBranches(): Int {
-        var otherCount = 0
-
-        for(ref in branchCall) {
-
-            otherCount++
-        }
-        return otherCount
     }
 
     private fun listOfUnmergedBranches(): List<Branch> {
@@ -182,18 +135,6 @@ class JGitService(remoteRepositoryUri: String): GitService {
         return unmergedBranches
     }
 
-    private fun numberOfUnmergedBranches(): Int {
-        var unmergedCount = 0
-
-        for(ref in branchCall) {
-            if (!hasBranchBeenMerged(ref.name)) {
-                unmergedCount++
-            }
-        }
-        return unmergedCount
-    }
-
-
     private fun listOfStaleBranches(): List<Branch> {
         val staleBranches = mutableListOf<Branch>()
 
@@ -211,19 +152,6 @@ class JGitService(remoteRepositoryUri: String): GitService {
         }
         return staleBranches
     }
-
-
-    private fun numberOfStaleBranches(): Int {
-        var staleCount = 0
-
-        for(ref in branchCall) {
-            if (hasBranchGoneStale(lastCommitOnBranch(ref.name))) {
-                staleCount++
-            }
-        }
-        return staleCount
-    }
-
 
     private fun hasBranchGoneStale(lastCommitDate: Date?): Boolean {
         val time = lastCommitDate?.time ?: run { return false }
