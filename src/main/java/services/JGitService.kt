@@ -18,7 +18,7 @@ interface GitService {
     fun createBranchesObject(type: BranchType): Branches
 }
 
-class JGitService(remoteRepositoryUri: String): GitService {
+class JGitService(account: Account): GitService {
 
     private var git: Git
     private lateinit var branchCall: List<Ref>
@@ -34,8 +34,8 @@ class JGitService(remoteRepositoryUri: String): GitService {
         localPath.delete()
 
         git = Git.cloneRepository()
-                .setURI(remoteRepositoryUri)
-                .setCredentialsProvider(UsernamePasswordCredentialsProvider(Account.USERNAME, Account.PASSWORD))
+                .setURI(account.repoUri)
+                .setCredentialsProvider(UsernamePasswordCredentialsProvider(account.username, account.password))
                 .setDirectory(localPath)
                 .call()
     }
