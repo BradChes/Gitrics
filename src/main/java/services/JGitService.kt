@@ -271,14 +271,16 @@ class JGitService(remoteRepositoryUri: String): GitService {
     override fun createBranchesObject(type: BranchType): Branches {
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
-        return when(type) {
-            BranchType.ALL -> Branches(listOfRemoteBranches(), numberOfRemoteBranches())
-            BranchType.FEAT -> Branches(listOfFeatureBranches(), numberOfFeatureBranches())
-            BranchType.SPIKE -> Branches(listOfSpikeBranches(), numberOfSpikeBranches())
-            BranchType.FIX -> Branches(listOfFixBranches(), numberOfFixBranches())
-            BranchType.OTHER -> Branches(listOfOtherBranches(), numberOfOtherBranches())
-            BranchType.UNMERGED -> Branches(listOfUnmergedBranches(), numberOfUnmergedBranches())
-            BranchType.STALE -> Branches(listOfStaleBranches(), numberOfStaleBranches())
+        val branchListType = when(type) {
+            BranchType.ALL -> listOfRemoteBranches()
+            BranchType.FEAT -> listOfFeatureBranches()
+            BranchType.SPIKE -> listOfSpikeBranches()
+            BranchType.FIX -> listOfFixBranches()
+            BranchType.OTHER -> listOfOtherBranches()
+            BranchType.UNMERGED -> listOfUnmergedBranches()
+            BranchType.STALE -> listOfStaleBranches()
         }
+
+        return Branches(branchListType, branchListType.count())
     }
 }
