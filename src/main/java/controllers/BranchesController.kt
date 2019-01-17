@@ -1,18 +1,19 @@
 package controllers
 
 import models.Branches
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.*
 import services.GitService
 import services.JGitService
 import utils.ConfigReader
 
 @RestController
-class BranchesController {
+class BranchesController(private val configPath: String) {
 
     private val jGitService: GitService
 
     init {
-        val account = ConfigReader("").jsonToAccount(false)
+        val account = ConfigReader(configPath).jsonToAccount()
         jGitService = JGitService(account)
     }
 

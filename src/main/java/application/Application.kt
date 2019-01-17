@@ -2,16 +2,16 @@ package application
 
 import controllers.BranchesController
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.SpringApplication
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
-@EnableAutoConfiguration
-@Configuration
+@SpringBootApplication
 class Application: ApplicationRunner {
+    private val logger = LoggerFactory.getLogger(Application::class.java)
 
     companion object {
         @JvmStatic
@@ -19,9 +19,6 @@ class Application: ApplicationRunner {
             SpringApplication.run(Application::class.java, *args)
         }
     }
-
-    private val logger = LoggerFactory.getLogger(Application::class.java)
-
 
     override fun run(args: ApplicationArguments?) {
         logger.info("OptionNames: {}", args?.optionNames)
@@ -31,5 +28,5 @@ class Application: ApplicationRunner {
     }
 
     @Bean
-    fun branchesController() = BranchesController()
+    fun branchesController(@Value("\${config}")configPath: String) = BranchesController(configPath)
 }
