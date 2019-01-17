@@ -12,7 +12,7 @@ class BranchesController {
     private val jGitService: GitService
 
     init {
-        val account = ConfigReader("").jsonToAccount()
+        val account = ConfigReader("").jsonToAccount(false)
         jGitService = JGitService(account)
     }
 
