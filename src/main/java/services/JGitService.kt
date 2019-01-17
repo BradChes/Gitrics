@@ -34,8 +34,8 @@ class JGitService(account: Account): GitService {
         localPath.delete()
 
         git = Git.cloneRepository()
-                .setURI(account.repoUri)
-                .setCredentialsProvider(UsernamePasswordCredentialsProvider(account.username, account.password))
+                .setURI(account.repoUrl)
+                .setCredentialsProvider(UsernamePasswordCredentialsProvider(account.username, account.accessToken))
                 .setDirectory(localPath)
                 .call()
     }
