@@ -8,7 +8,7 @@ import services.JGitService
 import utils.ConfigReader
 
 @RestController
-class BranchesController(private val configPath: String) {
+class BranchesController(configPath: String) {
 
     private val jGitService: GitService
 
