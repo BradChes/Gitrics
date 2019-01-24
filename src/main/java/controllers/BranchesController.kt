@@ -47,6 +47,11 @@ class BranchesController(configPath: String) {
         return jGitService.createBranchesObject(BranchType.UNMERGED)
     }
 
+    @RequestMapping("/branches/merged")
+    fun getMergedBranches(): Branches {
+        return jGitService.createBranchesObject(BranchType.MERGED)
+    }
+
     @RequestMapping("/branches/stale")
     fun getStaleBranches(): Branches {
         return jGitService.createBranchesObject(BranchType.STALE)
@@ -61,5 +66,6 @@ enum class BranchType {
     FIX,
     OTHER,
     UNMERGED,
+    MERGED,
     STALE
 }

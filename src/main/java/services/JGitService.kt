@@ -135,6 +135,24 @@ class JGitService(account: Account): GitService {
         return unmergedBranches
     }
 
+    private fun listOfMergedBranches(): List<Branch> {
+        val mergedBranches = mutableListOf<Branch>()
+
+        for(ref in branchCall) {
+            val branchName = ref.name
+            val hasBeenMerged = hasBranchBeenMerged(branchName)
+            if(hasBeenMerged) {
+                val branch = Branch(branchName,
+                        whenBranchesWereFirstMade(branchName).toString(),
+                        lastCommitOnBranch(branchName).toString(),
+                        hasBeenMerged,
+                        hasBranchGoneStale(whenBranchesWereFirstMade(branchName)))
+                mergedBranches.add(branch)
+            }
+        }
+        return mergedBranches
+    }
+
     private fun listOfStaleBranches(): List<Branch> {
         val staleBranches = mutableListOf<Branch>()
 
@@ -206,6 +224,7 @@ class JGitService(account: Account): GitService {
             BranchType.FIX -> listOfFixBranches()
             BranchType.OTHER -> listOfOtherBranches()
             BranchType.UNMERGED -> listOfUnmergedBranches()
+            BranchType.MERGED -> listOfMergedBranches()
             BranchType.STALE -> listOfStaleBranches()
         }
 
