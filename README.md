@@ -6,4 +6,4 @@ TODO
 ## Getting the results
 TODO
 ## Projects dependant on Gitrics
-TODO
+Currently there is one project that is dependent on the Gitrics API and that is the [Gitrics React App](https://github.com/bradches/gitrics-react).
