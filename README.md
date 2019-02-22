@@ -16,21 +16,21 @@ Once the API service is up and running, the results can be displayed in two ways
 (see Projects dependant on Gitrics for more infomation).
 ### Accessing the raw JSON data format 
 Going to the [localhost](http://localhost:8080/) followed by these endpoints:
-  - /branches
+  - `/branches`
   	* Displays all the branches related to the repository.
-  - /branches/feat
+  - `/branches/feat`
   	* Displays all the feature branches related to the repository.
-  - /branches/spike
+  - `/branches/spike`
   	* Displays all the spike branches related to the repository.
-  - /branches/fix
+  - `/branches/fix`
    	* Displays all the fix branches related to the repository.
-  - /branches/other
+  - `/branches/other`
   	* Displays all the other branches related to the repository.
-  - /branches/unmerged
+  - `/branches/unmerged`
   	* Displays all the unmerged branches related to the repository.
-  - /branches/merged
+  - `/branches/merged`
   	* Displays all the merged branches related to the repository.
-  - /branches/stale
+  - `/branches/stale`
   	* Displays all the stale branches related to the repository.
 ## Results Example
 Here is an example of the results that you would get from hitting the [branches](http://localhost:8080/branches) endpoint:
@@ -62,6 +62,21 @@ Here is an example of the results that you would get from hitting the [branches]
 	"size": 3
 }
 ```
-Talking through the JSON response
+Talking through the JSON response here is what each key means:
+- `Branches`
+	* JSON Array of Branch objects.
+- `name`
+	* The name of the branch on the repository.
+- `firstCreation`
+	* The time of which the branch was first created. This will appear null if the branch has already been merged.
+- `lastCommit`
+	* The time of the last commit to the branch.
+- `stale`
+	* Compares the days between `firstCreation` and `lastCommit`. If more than thirty days, this is set within code, the branch is considered stale.
+- `merged`
+	* Returns either true or false as to whether the branch has been merged into the repository.
+- `size`
+	* This returns an overall size of the branches object which is returned.
+
 ## Projects dependant on Gitrics
 Currently there is one project that is dependent on the Gitrics API and that is the [Gitrics React App](https://github.com/bradches/gitrics-react).
