@@ -12,16 +12,26 @@ When running the API service, it needs to be given a `config.json` file that loo
 ```
 ## Getting the results
 Once the API service is up and running, the results can be displayed in two ways:
-1. Using a dedicated UI front (see Projects dependant on Gitrics for more infomation).
-2. Accessing the raw JSON data format at [localhost](http://localhost:8080/) followed by:
-  *"/branches"
-  *"/branches/feat"
-  *"/branches/spike"
-  *"/branches/fix"
-  *"/branches/other"
-  *"/branches/unmerged"
-  *"/branches/merged"
-  *"/branches/stale"
+### Using a dedicated UI front 
+(see Projects dependant on Gitrics for more infomation).
+### Accessing the raw JSON data format 
+Going to the [localhost](http://localhost:8080/) followed by these endpoints:
+  - /branches
+  	* Displays all the branches related to the repository.
+  - /branches/feat
+  	* Displays all the feature branches related to the repository.
+  - /branches/spike
+  	* Displays all the spike branches related to the repository.
+  - /branches/fix
+   	* Displays all the fix branches related to the repository.
+  - /branches/other
+  	* Displays all the other branches related to the repository.
+  - /branches/unmerged
+  	* Displays all the unmerged branches related to the repository.
+  - /branches/merged
+  	* Displays all the merged branches related to the repository.
+  - /branches/stale
+  	* Displays all the stale branches related to the repository.
 ## Results Example
 Here is an example of the results that you would get from hitting the [branches](http://localhost:8080/branches) endpoint:
 ```
@@ -52,5 +62,6 @@ Here is an example of the results that you would get from hitting the [branches]
 	"size": 3
 }
 ```
+Talking through the JSON response
 ## Projects dependant on Gitrics
 Currently there is one project that is dependent on the Gitrics API and that is the [Gitrics React App](https://github.com/bradches/gitrics-react).
