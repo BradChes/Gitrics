@@ -1,7 +1,7 @@
 package services
 
 import controllers.BranchType
-import models.Account
+import models.ParsedConfig
 import models.Branch
 import models.Branches
 import java.io.File.*
@@ -18,7 +18,7 @@ interface GitService {
     fun createBranchesObject(type: BranchType): Branches
 }
 
-class JGitService(account: Account): GitService {
+class JGitService(parsedConfig: ParsedConfig): GitService {
 
     private var git: Git
     private lateinit var branchCall: List<Ref>
@@ -34,8 +34,8 @@ class JGitService(account: Account): GitService {
         localPath.delete()
 
         git = Git.cloneRepository()
-                .setURI(account.repoUrl)
-                .setCredentialsProvider(UsernamePasswordCredentialsProvider(account.username, account.accessToken))
+                .setURI(parsedConfig.repoUrl)
+                .setCredentialsProvider(UsernamePasswordCredentialsProvider(parsedConfig.username, parsedConfig.accessToken))
                 .setDirectory(localPath)
                 .call()
     }

@@ -13,8 +13,8 @@ class BranchesController(configPath: String) {
     private val jGitService: GitService
 
     init {
-        val account = ConfigReader(configPath).jsonToAccount()
-        jGitService = JGitService(account)
+        val parsedConfig = ConfigReader(configPath).jsonToAccount()
+        jGitService = JGitService(parsedConfig)
     }
 
     @RequestMapping("/branches")

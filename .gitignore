@@ -8,4 +8,4 @@ out
 .gradle
 gen
 .gradle/.gitignore
-/src/main/java/JGit/Account.kt
+/src/main/java/JGit/ParsedConfig.kt
