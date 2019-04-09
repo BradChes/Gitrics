@@ -267,7 +267,10 @@ class JGitService(private val options: Options, account: Account): GitService {
         for(day in listOfDays) {
             averageLifetime += day
         }
-        averageLifetime /= listOfDays.size
+        if (listOfDays.size != 0) {
+            averageLifetime /= listOfDays.size
+        }
+
         return averageLifetime
     }
 }
