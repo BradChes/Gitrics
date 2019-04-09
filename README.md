@@ -7,7 +7,9 @@ When running the API service, it needs to be given a `config.json` file that loo
 {
 	"username": [GITHUB ACCOUNT],
 	"accessToken": [GITHUB ACCESS TOKEN],
-	"repoUrl": [ADDRESS TO REPOSITORY]
+	"repoUrl": [ADDRESS TO REPOSITORY],
+	"branchMinimum": [MINIMUM NUMBER OF BRANCHES BEFORE WARNING],
+	"branchMaximum": [MAXIMUM NUMBER OF BRANCHES BEFORE ERROR]
 }
 ```
 ## Getting the results
