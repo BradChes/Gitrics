@@ -1,6 +1,5 @@
 package models
 
 
-data class Options(val repoUrl: String,
-                   val branchMinimum: Int,
+data class Options(val branchMinimum: Int,
                    val branchMaximum: Int)

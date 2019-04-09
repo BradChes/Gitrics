@@ -31,5 +31,5 @@ class Application: ApplicationRunner {
     @Bean
     fun branchesController(@Value("\${config}")configPath: String) = BranchesController(configPath)
     @Bean
-    fun optionsController() = OptionsController()
+    fun optionsController(@Value("\${config}")configPath: String) = OptionsController(configPath)
 }
