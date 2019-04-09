@@ -45,6 +45,32 @@ class JGitService(account: Account): GitService {
                 .call()
     }
 
+    override fun createBranchesObject(type: BranchType): Branches {
+        branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
+
+        val branchListType = when(type) {
+            BranchType.ALL -> listOfRemoteBranches()
+            BranchType.FEAT -> listOfFeatureBranches()
+            BranchType.SPIKE -> listOfSpikeBranches()
+            BranchType.FIX -> listOfFixBranches()
+            BranchType.OTHER -> listOfOtherBranches()
+            BranchType.UNMERGED -> listOfUnmergedBranches()
+            BranchType.MERGED -> listOfMergedBranches()
+            BranchType.STALE -> listOfStaleBranches()
+        }
+
+        return Branches(branchListType, branchListType.count())
+    }
+
+    override fun createLifetimeObject(): BranchesLifetime {
+        branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
+
+        return BranchesLifetime(averageBranchesLifetime(BranchType.ALL),
+                                averageBranchesLifetime(BranchType.FEAT),
+                                averageBranchesLifetime(BranchType.SPIKE),
+                                averageBranchesLifetime(BranchType.FIX))
+    }
+
     private fun listOfRemoteBranches(): List<Branch> {
         val branches = mutableListOf<Branch>()
 
@@ -57,27 +83,6 @@ class JGitService(account: Account): GitService {
             branches.add(branch)
         }
         return branches
-    }
-
-    private fun allBranchesAverageLifetime(): String {
-        val listOfDays = mutableListOf<Long>()
-
-        for(branch in listOfRemoteBranches()) {
-            if (!branch.isStale) {
-                if(!branch.isMerged) {
-                    val firstCreationDate = branch.firstCreation
-                    val nowDate = LocalDateTime.now()
-                    listOfDays.add(ChronoUnit.DAYS.between(firstCreationDate, nowDate))
-                }
-            }
-        }
-        var averageLifetime = 0L
-
-        for(day in listOfDays) {
-            averageLifetime += day
-        }
-        averageLifetime /= listOfDays.size
-        return averageLifetime.toString()
     }
 
     private fun listOfFeatureBranches(): List<Branch> {
@@ -240,26 +245,32 @@ class JGitService(account: Account): GitService {
         return revWalk.isMergedInto(branchHead, masterHead)
     }
 
-    override fun createBranchesObject(type: BranchType): Branches {
-        branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
+    private fun averageBranchesLifetime(type: BranchType): Int {
+        val listOfDays = mutableListOf<Int>()
 
-        val branchListType = when(type) {
+        val branchList = when(type) {
             BranchType.ALL -> listOfRemoteBranches()
             BranchType.FEAT -> listOfFeatureBranches()
             BranchType.SPIKE -> listOfSpikeBranches()
             BranchType.FIX -> listOfFixBranches()
-            BranchType.OTHER -> listOfOtherBranches()
-            BranchType.UNMERGED -> listOfUnmergedBranches()
-            BranchType.MERGED -> listOfMergedBranches()
-            BranchType.STALE -> listOfStaleBranches()
+            else -> emptyList()
         }
 
-        return Branches(branchListType, branchListType.count())
-    }
+        for(branch in branchList) {
+            if (!branch.isStale) {
+                if(!branch.isMerged) {
+                    val firstCreationDate = branch.firstCreation
+                    val nowDate = LocalDateTime.now()
+                    listOfDays.add(ChronoUnit.DAYS.between(firstCreationDate, nowDate).toInt())
+                }
+            }
+        }
+        var averageLifetime = 0
 
-    override fun createLifetimeObject(): BranchesLifetime {
-        branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
-
-        return BranchesLifetime(allBranchesAverageLifetime())
+        for(day in listOfDays) {
+            averageLifetime += day
+        }
+        averageLifetime /= listOfDays.size
+        return averageLifetime
     }
 }
