@@ -16,7 +16,7 @@ class ConfigReader(private val configPath: String?) {
     }
 
     fun parsedConfigToAccount(): Account {
-        return Account(parsedConfig.username, parsedConfig.accessToken, parsedConfig.repoUrls[0])
+        return Account(parsedConfig.username, parsedConfig.accessToken, parsedConfig.repoUrls)
     }
 
     fun parsedConfigToOptions(): Options {

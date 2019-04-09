@@ -8,6 +8,7 @@ import org.eclipse.jgit.api.ListBranchCommand.*
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
+import java.io.File
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
@@ -20,9 +21,9 @@ interface GitService {
     fun createLifetimeObject(): BranchesLifetime
 }
 
-class JGitService(private val options: Options, account: Account): GitService {
+class JGitService(private val options: Options, private val account: Account): GitService {
 
-    private var git: Git
+    private lateinit var git: Git
     private lateinit var branchCall: List<Ref>
 
     // Regex
@@ -32,14 +33,27 @@ class JGitService(private val options: Options, account: Account): GitService {
     private val otherRegex = "/\\b(spike|feat|fix)\\b/".toRegex()
 
     init {
-        val localPath = createTempFile("JGitRepository", null)
-        localPath.delete()
+        gitRepositoryCreation()
+    }
 
-        git = Git.cloneRepository()
-                .setURI(account.repoUrl)
-                .setCredentialsProvider(UsernamePasswordCredentialsProvider(account.username, account.accessToken))
-                .setDirectory(localPath)
-                .call()
+    private fun gitRepositoryCreation() {
+
+        val pathList = mutableListOf<File>()
+
+        for(path in account.repoUrls) {
+            val localPath = createTempFile("JGitRepository", null)
+            localPath.delete()
+
+            pathList.add(localPath)
+
+            Git.cloneRepository()
+                    .setURI(path)
+                    .setCredentialsProvider(UsernamePasswordCredentialsProvider(account.username, account.accessToken))
+                    .setDirectory(localPath)
+                    .call()
+        }
+
+        git = Git.open(pathList[1])
     }
 
     override fun createBranchesObject(type: BranchType): Branches {
