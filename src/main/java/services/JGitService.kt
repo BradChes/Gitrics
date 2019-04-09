@@ -4,6 +4,7 @@ import controllers.BranchType
 import models.Account
 import models.Branch
 import models.Branches
+import models.BranchesLifetime
 import java.io.File.*
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListBranchCommand.*
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeUnit
 
 interface GitService {
     fun createBranchesObject(type: BranchType): Branches
+    fun createLifetimeObject(): BranchesLifetime
 }
 
 class JGitService(account: Account): GitService {
@@ -229,5 +231,9 @@ class JGitService(account: Account): GitService {
         }
 
         return Branches(branchListType, branchListType.count())
+    }
+
+    override fun createLifetimeObject(): BranchesLifetime {
+        return BranchesLifetime()
     }
 }

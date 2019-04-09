@@ -59,7 +59,7 @@ class BranchesController(configPath: String) {
 
     @RequestMapping("/branches/lifetime")
     fun getAverageLifetime(): BranchesLifetime {
-        return BranchesLifetime()
+        return jGitService.createLifetimeObject()
     }
 }
 
