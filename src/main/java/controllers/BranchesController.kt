@@ -1,7 +1,6 @@
 package controllers
 
 import models.Branches
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.*
 import services.GitService
 import services.JGitService
@@ -13,7 +12,7 @@ class BranchesController(configPath: String) {
     private val jGitService: GitService
 
     init {
-        val account = ConfigReader(configPath).jsonToAccount()
+        val account = ConfigReader(configPath).parsedConfigToAccount()
         jGitService = JGitService(account)
     }
 
