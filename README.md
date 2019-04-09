@@ -75,7 +75,7 @@ Talking through the JSON response here is what each key means:
 - `lastCommit`
 	* The time of the last commit to the branch.
 - `stale`
-	* Compares the days between `firstCreation` and `lastCommit`. If more than thirty days, this is set within code, the branch is considered stale.
+	* Compares the days between `firstCreation` and `lastCommit`. Determined by the `staleDefinition` from the passed though config. 
 - `merged`
 	* Returns either true or false as to whether the branch has been merged into the repository.
 - `size`
