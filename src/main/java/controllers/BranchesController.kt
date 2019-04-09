@@ -1,7 +1,6 @@
 package controllers
 
 import models.Branches
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.*
 import services.GitService
 import services.JGitService

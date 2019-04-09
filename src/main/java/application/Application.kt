@@ -1,6 +1,7 @@
 package application
 
 import controllers.BranchesController
+import controllers.OptionsController
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.ApplicationArguments
@@ -29,4 +30,6 @@ class Application: ApplicationRunner {
 
     @Bean
     fun branchesController(@Value("\${config}")configPath: String) = BranchesController(configPath)
+    @Bean
+    fun optionsController() = OptionsController()
 }
