@@ -1,6 +1,7 @@
 package controllers
 
 import models.Branches
+import models.BranchesLifetime
 import org.springframework.web.bind.annotation.*
 import services.GitService
 import services.JGitService
@@ -56,6 +57,10 @@ class BranchesController(configPath: String) {
         return jGitService.createBranchesObject(BranchType.STALE)
     }
 
+    @RequestMapping("/branches/lifetime")
+    fun getAverageLifetime(): BranchesLifetime {
+        return jGitService.createLifetimeObject()
+    }
 }
 
 enum class BranchType {
