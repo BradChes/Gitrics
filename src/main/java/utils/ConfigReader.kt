@@ -20,6 +20,6 @@ class ConfigReader(private val configPath: String?) {
     }
 
     fun parsedConfigToOptions(): Options {
-        return Options(parsedConfig.branchMinimum, parsedConfig.branchMaximum)
+        return Options(parsedConfig.branchMinimum, parsedConfig.branchMaximum, parsedConfig.staleDefinition)
     }
 }

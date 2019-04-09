@@ -1,10 +1,7 @@
 package services
 
 import controllers.BranchType
-import models.Account
-import models.Branch
-import models.Branches
-import models.BranchesLifetime
+import models.*
 import java.io.File.*
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListBranchCommand.*
@@ -23,7 +20,7 @@ interface GitService {
     fun createLifetimeObject(): BranchesLifetime
 }
 
-class JGitService(account: Account): GitService {
+class JGitService(private val options: Options, account: Account): GitService {
 
     private var git: Git
     private lateinit var branchCall: List<Ref>
@@ -206,7 +203,7 @@ class JGitService(account: Account): GitService {
         val lastCommit = lastCommitDate ?: run { return false }
         val nowDate = LocalDateTime.now()
         val differentInDays = ChronoUnit.DAYS.between(lastCommit, nowDate)
-        if(differentInDays >= 30) {
+        if(differentInDays >= options.staleDefinition) {
             return true
         }
         return false
