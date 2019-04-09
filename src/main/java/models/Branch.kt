@@ -1,9 +1,9 @@
 package models
 
-import java.util.*
+import java.time.LocalDateTime
 
 data class Branch (val name: String,
-                   val firstCreation: Date?,
-                   val lastCommit: Date?,
-                   val isMerged: Boolean?,
+                   val firstCreation: LocalDateTime?,
+                   val lastCommit: LocalDateTime?,
+                   val isMerged: Boolean,
                    val isStale: Boolean)

@@ -11,6 +11,9 @@ import org.eclipse.jgit.api.ListBranchCommand.*
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -54,6 +57,27 @@ class JGitService(account: Account): GitService {
             branches.add(branch)
         }
         return branches
+    }
+
+    private fun allBranchesAverageLifetime(): String {
+        val listOfDays = mutableListOf<Long>()
+
+        for(branch in listOfRemoteBranches()) {
+            if (!branch.isStale) {
+                if(!branch.isMerged) {
+                    val firstCreationDate = branch.firstCreation
+                    val nowDate = LocalDateTime.now()
+                    listOfDays.add(ChronoUnit.DAYS.between(firstCreationDate, nowDate))
+                }
+            }
+        }
+        var averageLifetime = 0L
+
+        for(day in listOfDays) {
+            averageLifetime += day
+        }
+        averageLifetime /= listOfDays.size
+        return averageLifetime.toString()
     }
 
     private fun listOfFeatureBranches(): List<Branch> {
@@ -166,24 +190,24 @@ class JGitService(account: Account): GitService {
                         whenBranchesWereFirstMade(branchName),
                         lastCommitOnBranch(branchName),
                         hasBeenMerged,
-                        hasBranchGoneStale(whenBranchesWereFirstMade(branchName)))
+                        hasBranchGoneStale(lastCommitOnBranch(branchName)))
                 staleBranches.add(branch)
             }
         }
         return staleBranches
     }
 
-    private fun hasBranchGoneStale(lastCommitDate: Date?): Boolean {
-        val time = lastCommitDate?.time ?: run { return false }
-        val differenceInMilliseconds = Date().time - time
-        val differenceInDays = TimeUnit.MILLISECONDS.toDays(differenceInMilliseconds)
-        if(differenceInDays >= 30) {
+    private fun hasBranchGoneStale(lastCommitDate: LocalDateTime?): Boolean {
+        val lastCommit = lastCommitDate ?: run { return false }
+        val nowDate = LocalDateTime.now()
+        val differentInDays = ChronoUnit.DAYS.between(lastCommit, nowDate)
+        if(differentInDays >= 30) {
             return true
         }
         return false
     }
 
-    private fun lastCommitOnBranch(branchName: String): Date? {
+    private fun lastCommitOnBranch(branchName: String): LocalDateTime? {
         if(!hasBranchBeenMerged(branchName)) {
             val revCommit = git.log()
                     .add(git.repository.resolve(branchName))
@@ -191,12 +215,12 @@ class JGitService(account: Account): GitService {
                     .call().first()
 
             val authorIdent = revCommit.authorIdent
-            return authorIdent.getWhen()
+            return LocalDateTime.ofInstant(authorIdent.getWhen().toInstant(), ZoneId.systemDefault())
         }
         return null
     }
 
-    private fun whenBranchesWereFirstMade(branchName: String): Date? {
+    private fun whenBranchesWereFirstMade(branchName: String): LocalDateTime? {
             if(!hasBranchBeenMerged(branchName)) {
                 val revCommit = git.log()
                         .add(git.repository.resolve(branchName))
@@ -204,7 +228,7 @@ class JGitService(account: Account): GitService {
                         .call().last()
 
                 val authorIdent = revCommit.authorIdent
-                return authorIdent.getWhen()
+                return LocalDateTime.ofInstant(authorIdent.getWhen().toInstant(), ZoneId.systemDefault())
             }
         return null
     }
@@ -234,6 +258,8 @@ class JGitService(account: Account): GitService {
     }
 
     override fun createLifetimeObject(): BranchesLifetime {
-        return BranchesLifetime()
+        branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
+
+        return BranchesLifetime(allBranchesAverageLifetime())
     }
 }
