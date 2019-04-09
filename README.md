@@ -9,7 +9,8 @@ When running the API service, it needs to be given a `config.json` file that loo
 	"accessToken": [GITHUB ACCESS TOKEN],
 	"repoUrl": [ADDRESS TO REPOSITORY],
 	"branchMinimum": [MINIMUM NUMBER OF BRANCHES BEFORE WARNING],
-	"branchMaximum": [MAXIMUM NUMBER OF BRANCHES BEFORE ERROR]
+	"branchMaximum": [MAXIMUM NUMBER OF BRANCHES BEFORE ERROR],
+	"staleDefinition": [DAYS UNTIL BRANCH IS CONSIDERED STALE]
 }
 ```
 ## Getting the results
