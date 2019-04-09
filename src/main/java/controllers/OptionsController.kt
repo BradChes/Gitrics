@@ -1,9 +1,9 @@
 package controllers
 
 import org.springframework.web.bind.annotation.*
-import services.Options
 import services.OptionsService
 import services.ParsedOptionsService
+import models.Options
 
 @RestController
 class OptionsController {

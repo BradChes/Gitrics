@@ -1,5 +1,7 @@
 package services
 
+import models.Options
+
 interface OptionsService {
     fun createOptionsObject(): Options
 }
@@ -10,7 +12,3 @@ class ParsedOptionsService: OptionsService {
     }
 
 }
-
-data class Options(val repoUrl: String,
-                   val branchMinimum: Int,
-                   val branchMaximum: Int)
