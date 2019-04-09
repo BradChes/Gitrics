@@ -42,7 +42,7 @@ class JGitService(private val options: Options, private val account: Account): G
 
         for(path in account.repoUrls) {
             val localPath = createTempFile("JGitRepository", null)
-            localPath.delete()
+            //localPath.delete()
 
             pathList.add(localPath)
 
