@@ -19,15 +19,15 @@ import java.time.temporal.ChronoUnit
 
 
 interface GitService {
-    fun createBranchesObject(id: Int, type: BranchType): Branches
-    fun createLifetimeObject(id: Int): BranchesLifetime
+    fun createBranchesObject(repoName: String, type: BranchType): Branches
+    fun createLifetimeObject(repoName: String): BranchesLifetime
 }
 
 class JGitService(private val options: Options, private val account: Account): GitService {
 
     private lateinit var git: Git
     private lateinit var branchCall: List<Ref>
-    private val pathList = mutableListOf<File>()
+    private val pathList = mutableMapOf<String, File>()
 
     // Regex
     private val featRegex = "/\\bfeat\\b/".toRegex()
@@ -44,8 +44,7 @@ class JGitService(private val options: Options, private val account: Account): G
             val reposDirectory = File(options.repoPath)
             reposDirectory.mkdirs()
 
-            val repoName = path.substring(path.lastIndexOf("/"), path.lastIndexOf(".git"))
-
+            val repoName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".git"))
             val repoFolders =  File(reposDirectory, repoName)
 
             if (Files.notExists(repoFolders.toPath())) {
@@ -56,12 +55,12 @@ class JGitService(private val options: Options, private val account: Account): G
                         .call()
             }
 
-            pathList.add(repoFolders)
+            pathList[repoName] = repoFolders
         }
     }
 
-    override fun createBranchesObject(id: Int, type: BranchType): Branches {
-        git = Git.open(pathList[id])
+    override fun createBranchesObject(repoName: String, type: BranchType): Branches {
+        git = Git.open(pathList[repoName])
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
         val branchListType = when(type) {
@@ -78,8 +77,8 @@ class JGitService(private val options: Options, private val account: Account): G
         return Branches(branchListType, branchListType.count())
     }
 
-    override fun createLifetimeObject(id: Int): BranchesLifetime {
-        git = Git.open(pathList[id])
+    override fun createLifetimeObject(repoName: String): BranchesLifetime {
+        git = Git.open(pathList[repoName])
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
         return BranchesLifetime(averageBranchesLifetime(BranchType.ALL),
