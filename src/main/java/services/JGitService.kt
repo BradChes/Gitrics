@@ -44,8 +44,7 @@ class JGitService(private val options: Options, private val account: Account): G
             val reposDirectory = File(options.repoPath)
             reposDirectory.mkdirs()
 
-            val repoName = path.substring(path.lastIndexOf("/"), path.lastIndexOf(".git"))
-
+            val repoName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".git"))
             val repoFolders =  File(reposDirectory, repoName)
 
             if (Files.notExists(repoFolders.toPath())) {
