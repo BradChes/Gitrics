@@ -25,6 +25,8 @@ class ConfigReader(private val configPath: String?) {
         return Options(parsedConfig.repoPath,
                 parsedConfig.branchMinimum,
                 parsedConfig.branchMaximum,
+                parsedConfig.branchesAverageLifetimeMinimumThreshold,
+                parsedConfig.branchesAverageLifetimeMaximumThreshold,
                 parsedConfig.staleDefinition)
     }
 }
