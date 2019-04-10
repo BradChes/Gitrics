@@ -40,14 +40,13 @@ class JGitService(private val options: Options, private val account: Account): G
     }
 
     private fun gitRepositoryCreation() {
-        var count = 0
         for(path in account.repoUrls) {
-            count++
-
             val reposDirectory = File(options.repoPath)
             reposDirectory.mkdirs()
 
-            val repoFolders =  File(reposDirectory, "JGitRepository$count")
+            val repoName = path.substring(path.lastIndexOf("/"), path.lastIndexOf(".git"))
+
+            val repoFolders =  File(reposDirectory, repoName)
 
             if (Files.notExists(repoFolders.toPath())) {
                 Git.cloneRepository()
