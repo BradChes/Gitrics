@@ -1,6 +1,6 @@
 package services
 
-import models.Options
+import models.configs.Options
 
 interface OptionsService {
     fun createOptionsObject(): Options

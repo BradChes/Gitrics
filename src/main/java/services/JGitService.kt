@@ -1,7 +1,11 @@
 package services
 
 import controllers.BranchType
-import models.*
+import models.configs.Account
+import models.configs.Options
+import models.data.Branch
+import models.data.Branches
+import models.data.BranchesLifetime
 import java.io.File.*
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListBranchCommand.*
@@ -12,8 +16,6 @@ import java.io.File
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 interface GitService {
@@ -78,9 +80,9 @@ class JGitService(private val options: Options, private val account: Account): G
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
         return BranchesLifetime(averageBranchesLifetime(BranchType.ALL),
-                                averageBranchesLifetime(BranchType.FEAT),
-                                averageBranchesLifetime(BranchType.SPIKE),
-                                averageBranchesLifetime(BranchType.FIX))
+                averageBranchesLifetime(BranchType.FEAT),
+                averageBranchesLifetime(BranchType.SPIKE),
+                averageBranchesLifetime(BranchType.FIX))
     }
 
     private fun listOfRemoteBranches(): List<Branch> {
