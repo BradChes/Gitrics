@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 
 
 interface GitService {
-    fun createBranchesObject(type: BranchType): Branches
+    fun createBranchesObject(id: Int, type: BranchType): Branches
     fun createLifetimeObject(): BranchesLifetime
 }
 
@@ -25,6 +25,8 @@ class JGitService(private val options: Options, private val account: Account): G
 
     private lateinit var git: Git
     private lateinit var branchCall: List<Ref>
+    private val pathList = mutableListOf<File>()
+
 
     // Regex
     private val featRegex = "/\\bfeat\\b/".toRegex()
@@ -38,11 +40,10 @@ class JGitService(private val options: Options, private val account: Account): G
 
     private fun gitRepositoryCreation() {
 
-        val pathList = mutableListOf<File>()
 
         for(path in account.repoUrls) {
             val localPath = createTempFile("JGitRepository", null)
-            //localPath.delete()
+            localPath.delete()
 
             pathList.add(localPath)
 
@@ -56,7 +57,8 @@ class JGitService(private val options: Options, private val account: Account): G
         git = Git.open(pathList[1])
     }
 
-    override fun createBranchesObject(type: BranchType): Branches {
+    override fun createBranchesObject(id: Int, type: BranchType): Branches {
+        git = Git.open(pathList[id])
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
         val branchListType = when(type) {

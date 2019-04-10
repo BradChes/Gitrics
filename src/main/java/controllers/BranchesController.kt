@@ -19,44 +19,44 @@ class BranchesController(configPath: String) {
         jGitService = JGitService(options, account)
     }
 
-    @RequestMapping("/branches")
-    fun getBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.ALL)
+    @RequestMapping("{id}/branches")
+    fun getBranches(@PathVariable id: Int): Branches {
+        return jGitService.createBranchesObject(id, BranchType.ALL)
     }
 
     @RequestMapping("/branches/feat")
     fun getFeatBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.FEAT)
+        return jGitService.createBranchesObject(0, BranchType.FEAT)
     }
 
     @RequestMapping("/branches/spike")
     fun getSpikeBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.SPIKE)
+        return jGitService.createBranchesObject(0,BranchType.SPIKE)
     }
 
     @RequestMapping("/branches/fix")
     fun getFixBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.FIX)
+        return jGitService.createBranchesObject(0,BranchType.FIX)
     }
 
     @RequestMapping("/branches/other")
     fun getOtherBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.OTHER)
+        return jGitService.createBranchesObject(0,BranchType.OTHER)
     }
 
     @RequestMapping("/branches/unmerged")
     fun getUnmergedBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.UNMERGED)
+        return jGitService.createBranchesObject(0,BranchType.UNMERGED)
     }
 
     @RequestMapping("/branches/merged")
     fun getMergedBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.MERGED)
+        return jGitService.createBranchesObject(0,BranchType.MERGED)
     }
 
     @RequestMapping("/branches/stale")
     fun getStaleBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.STALE)
+        return jGitService.createBranchesObject(0,BranchType.STALE)
     }
 
     @RequestMapping("/branches/lifetime")
