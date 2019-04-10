@@ -13,6 +13,7 @@ import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import java.io.File
+import java.nio.file.Files
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
@@ -43,17 +44,21 @@ class JGitService(private val options: Options, private val account: Account): G
         var count = 0
         for(path in account.repoUrls) {
             count++
-            val file  = File("${options.repoPath}/JGitRepository$count")
-            pathList.add(file)
 
-            if (file.createNewFile()) {
+            val reposDirectory = File(options.repoPath)
+            reposDirectory.mkdirs()
 
+            val repoFolders =  File(reposDirectory, "JGitRepository$count")
+
+            if (!Files.exists(repoFolders.toPath())) {
                 Git.cloneRepository()
                         .setURI(path)
                         .setCredentialsProvider(UsernamePasswordCredentialsProvider(account.username, account.accessToken))
-                        .setDirectory(file)
+                        .setDirectory(repoFolders)
                         .call()
             }
+
+            pathList.add(repoFolders)
         }
     }
 
