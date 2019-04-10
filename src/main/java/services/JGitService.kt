@@ -8,6 +8,7 @@ import org.eclipse.jgit.api.ListBranchCommand.*
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
+import java.io.File
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
@@ -16,14 +17,15 @@ import java.util.concurrent.TimeUnit
 
 
 interface GitService {
-    fun createBranchesObject(type: BranchType): Branches
-    fun createLifetimeObject(): BranchesLifetime
+    fun createBranchesObject(id: Int, type: BranchType): Branches
+    fun createLifetimeObject(id: Int): BranchesLifetime
 }
 
-class JGitService(private val options: Options, account: Account): GitService {
+class JGitService(private val options: Options, private val account: Account): GitService {
 
-    private var git: Git
+    private lateinit var git: Git
     private lateinit var branchCall: List<Ref>
+    private val pathList = mutableListOf<File>()
 
     // Regex
     private val featRegex = "/\\bfeat\\b/".toRegex()
@@ -32,17 +34,29 @@ class JGitService(private val options: Options, account: Account): GitService {
     private val otherRegex = "/\\b(spike|feat|fix)\\b/".toRegex()
 
     init {
-        val localPath = createTempFile("JGitRepository", null)
-        localPath.delete()
-
-        git = Git.cloneRepository()
-                .setURI(account.repoUrl)
-                .setCredentialsProvider(UsernamePasswordCredentialsProvider(account.username, account.accessToken))
-                .setDirectory(localPath)
-                .call()
+        gitRepositoryCreation()
     }
 
-    override fun createBranchesObject(type: BranchType): Branches {
+    private fun gitRepositoryCreation() {
+
+        for(path in account.repoUrls) {
+            val localPath = createTempFile("JGitRepository", null)
+            localPath.delete()
+
+            pathList.add(localPath)
+
+            Git.cloneRepository()
+                    .setURI(path)
+                    .setCredentialsProvider(UsernamePasswordCredentialsProvider(account.username, account.accessToken))
+                    .setDirectory(localPath)
+                    .call()
+        }
+
+        git = Git.open(pathList[1])
+    }
+
+    override fun createBranchesObject(id: Int, type: BranchType): Branches {
+        git = Git.open(pathList[id])
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
         val branchListType = when(type) {
@@ -59,7 +73,8 @@ class JGitService(private val options: Options, account: Account): GitService {
         return Branches(branchListType, branchListType.count())
     }
 
-    override fun createLifetimeObject(): BranchesLifetime {
+    override fun createLifetimeObject(id: Int): BranchesLifetime {
+        git = Git.open(pathList[id])
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
         return BranchesLifetime(averageBranchesLifetime(BranchType.ALL),
@@ -99,7 +114,7 @@ class JGitService(private val options: Options, account: Account): GitService {
     }
 
     private fun listOfSpikeBranches(): List<Branch> {
-        val featureBranches= mutableListOf<Branch>()
+        val spikeBranches= mutableListOf<Branch>()
 
         for(ref in branchCall) {
             val branchName = ref.name
@@ -108,10 +123,10 @@ class JGitService(private val options: Options, account: Account): GitService {
                         lastCommitOnBranch(branchName),
                         hasBranchBeenMerged(branchName),
                         hasBranchGoneStale(whenBranchesWereFirstMade(branchName)))
-                featureBranches.add(branch)
+                spikeBranches.add(branch)
             }
         }
-        return featureBranches
+        return spikeBranches
     }
 
     private fun listOfFixBranches(): List<Branch> {

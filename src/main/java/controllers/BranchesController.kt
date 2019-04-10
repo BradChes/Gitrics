@@ -19,49 +19,49 @@ class BranchesController(configPath: String) {
         jGitService = JGitService(options, account)
     }
 
-    @RequestMapping("/branches")
-    fun getBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.ALL)
+    @RequestMapping("{id}/branches")
+    fun getBranches(@PathVariable id: Int): Branches {
+        return jGitService.createBranchesObject(id, BranchType.ALL)
     }
 
-    @RequestMapping("/branches/feat")
-    fun getFeatBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.FEAT)
+    @RequestMapping("{id}/branches/feat")
+    fun getFeatBranches(@PathVariable id: Int): Branches {
+        return jGitService.createBranchesObject(id, BranchType.FEAT)
     }
 
-    @RequestMapping("/branches/spike")
-    fun getSpikeBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.SPIKE)
+    @RequestMapping("{id}/branches/spike")
+    fun getSpikeBranches(@PathVariable id: Int): Branches {
+        return jGitService.createBranchesObject(id,BranchType.SPIKE)
     }
 
-    @RequestMapping("/branches/fix")
-    fun getFixBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.FIX)
+    @RequestMapping("{id}/branches/fix")
+    fun getFixBranches(@PathVariable id: Int): Branches {
+        return jGitService.createBranchesObject(id,BranchType.FIX)
     }
 
-    @RequestMapping("/branches/other")
-    fun getOtherBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.OTHER)
+    @RequestMapping("{id}/branches/other")
+    fun getOtherBranches(@PathVariable id: Int): Branches {
+        return jGitService.createBranchesObject(id,BranchType.OTHER)
     }
 
-    @RequestMapping("/branches/unmerged")
-    fun getUnmergedBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.UNMERGED)
+    @RequestMapping("{id}/branches/unmerged")
+    fun getUnmergedBranches(@PathVariable id: Int): Branches {
+        return jGitService.createBranchesObject(id,BranchType.UNMERGED)
     }
 
-    @RequestMapping("/branches/merged")
-    fun getMergedBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.MERGED)
+    @RequestMapping("{id}/branches/merged")
+    fun getMergedBranches(@PathVariable id: Int): Branches {
+        return jGitService.createBranchesObject(id,BranchType.MERGED)
     }
 
-    @RequestMapping("/branches/stale")
-    fun getStaleBranches(): Branches {
-        return jGitService.createBranchesObject(BranchType.STALE)
+    @RequestMapping("{id}/branches/stale")
+    fun getStaleBranches(@PathVariable id: Int): Branches {
+        return jGitService.createBranchesObject(id,BranchType.STALE)
     }
 
-    @RequestMapping("/branches/lifetime")
-    fun getAverageLifetime(): BranchesLifetime {
-        return jGitService.createLifetimeObject()
+    @RequestMapping("{id}/branches/lifetime")
+    fun getAverageLifetime(@PathVariable id: Int): BranchesLifetime {
+        return jGitService.createLifetimeObject(id)
     }
 }
 
