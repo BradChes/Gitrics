@@ -40,21 +40,21 @@ class JGitService(private val options: Options, private val account: Account): G
     }
 
     private fun gitRepositoryCreation() {
-
+        var count = 0
         for(path in account.repoUrls) {
-            val localPath = createTempFile("JGitRepository", null)
-            localPath.delete()
+            count++
+            val file  = File("${options.repoPath}/JGitRepository$count")
+            pathList.add(file)
 
-            pathList.add(localPath)
+            if (file.createNewFile()) {
 
-            Git.cloneRepository()
-                    .setURI(path)
-                    .setCredentialsProvider(UsernamePasswordCredentialsProvider(account.username, account.accessToken))
-                    .setDirectory(localPath)
-                    .call()
+                Git.cloneRepository()
+                        .setURI(path)
+                        .setCredentialsProvider(UsernamePasswordCredentialsProvider(account.username, account.accessToken))
+                        .setDirectory(file)
+                        .call()
+            }
         }
-
-        git = Git.open(pathList[1])
     }
 
     override fun createBranchesObject(id: Int, type: BranchType): Branches {
