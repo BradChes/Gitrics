@@ -3,7 +3,7 @@ package controllers
 import org.springframework.web.bind.annotation.*
 import services.OptionsService
 import services.ParsedOptionsService
-import models.Options
+import models.configs.Options
 import utils.ConfigReader
 
 @RestController

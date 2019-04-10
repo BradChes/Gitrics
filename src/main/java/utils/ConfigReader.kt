@@ -1,9 +1,9 @@
 package utils
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import models.Account
-import models.Options
-import models.ParsedConfig
+import models.configs.Account
+import models.configs.Options
+import models.configs.ParsedConfig
 import java.io.File
 
 class ConfigReader(private val configPath: String?) {
@@ -16,10 +16,15 @@ class ConfigReader(private val configPath: String?) {
     }
 
     fun parsedConfigToAccount(): Account {
-        return Account(parsedConfig.username, parsedConfig.accessToken, parsedConfig.repoUrls)
+        return Account(parsedConfig.username,
+                parsedConfig.accessToken,
+                parsedConfig.repoUrls)
     }
 
     fun parsedConfigToOptions(): Options {
-        return Options(parsedConfig.branchMinimum, parsedConfig.branchMaximum, parsedConfig.staleDefinition)
+        return Options(parsedConfig.repoPath,
+                parsedConfig.branchMinimum,
+                parsedConfig.branchMaximum,
+                parsedConfig.staleDefinition)
     }
 }

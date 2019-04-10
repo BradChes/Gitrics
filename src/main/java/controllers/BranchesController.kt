@@ -1,7 +1,7 @@
 package controllers
 
-import models.Branches
-import models.BranchesLifetime
+import models.data.Branches
+import models.data.BranchesLifetime
 import org.springframework.web.bind.annotation.*
 import services.GitService
 import services.JGitService

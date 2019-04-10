@@ -1,19 +1,21 @@
 package services
 
 import controllers.BranchType
-import models.*
-import java.io.File.*
+import models.configs.Account
+import models.configs.Options
+import models.data.Branch
+import models.data.Branches
+import models.data.BranchesLifetime
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListBranchCommand.*
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import java.io.File
+import java.nio.file.Files
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 interface GitService {
@@ -38,21 +40,24 @@ class JGitService(private val options: Options, private val account: Account): G
     }
 
     private fun gitRepositoryCreation() {
-
         for(path in account.repoUrls) {
-            val localPath = createTempFile("JGitRepository", null)
-            localPath.delete()
+            val reposDirectory = File(options.repoPath)
+            reposDirectory.mkdirs()
 
-            pathList.add(localPath)
+            val repoName = path.substring(path.lastIndexOf("/"), path.lastIndexOf(".git"))
 
-            Git.cloneRepository()
-                    .setURI(path)
-                    .setCredentialsProvider(UsernamePasswordCredentialsProvider(account.username, account.accessToken))
-                    .setDirectory(localPath)
-                    .call()
+            val repoFolders =  File(reposDirectory, repoName)
+
+            if (Files.notExists(repoFolders.toPath())) {
+                Git.cloneRepository()
+                        .setURI(path)
+                        .setCredentialsProvider(UsernamePasswordCredentialsProvider(account.username, account.accessToken))
+                        .setDirectory(repoFolders)
+                        .call()
+            }
+
+            pathList.add(repoFolders)
         }
-
-        git = Git.open(pathList[1])
     }
 
     override fun createBranchesObject(id: Int, type: BranchType): Branches {
@@ -78,9 +83,9 @@ class JGitService(private val options: Options, private val account: Account): G
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
         return BranchesLifetime(averageBranchesLifetime(BranchType.ALL),
-                                averageBranchesLifetime(BranchType.FEAT),
-                                averageBranchesLifetime(BranchType.SPIKE),
-                                averageBranchesLifetime(BranchType.FIX))
+                averageBranchesLifetime(BranchType.FEAT),
+                averageBranchesLifetime(BranchType.SPIKE),
+                averageBranchesLifetime(BranchType.FIX))
     }
 
     private fun listOfRemoteBranches(): List<Branch> {
