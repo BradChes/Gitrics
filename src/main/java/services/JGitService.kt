@@ -6,7 +6,6 @@ import models.configs.Options
 import models.data.Branch
 import models.data.Branches
 import models.data.BranchesLifetime
-import java.io.File.*
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListBranchCommand.*
 import org.eclipse.jgit.lib.Ref
@@ -50,7 +49,7 @@ class JGitService(private val options: Options, private val account: Account): G
 
             val repoFolders =  File(reposDirectory, "JGitRepository$count")
 
-            if (!Files.exists(repoFolders.toPath())) {
+            if (Files.notExists(repoFolders.toPath())) {
                 Git.cloneRepository()
                         .setURI(path)
                         .setCredentialsProvider(UsernamePasswordCredentialsProvider(account.username, account.accessToken))
