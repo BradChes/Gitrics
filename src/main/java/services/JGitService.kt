@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 
 interface GitService {
     fun createBranchesObject(id: Int, type: BranchType): Branches
-    fun createLifetimeObject(): BranchesLifetime
+    fun createLifetimeObject(id: Int): BranchesLifetime
 }
 
 class JGitService(private val options: Options, private val account: Account): GitService {
@@ -26,7 +26,6 @@ class JGitService(private val options: Options, private val account: Account): G
     private lateinit var git: Git
     private lateinit var branchCall: List<Ref>
     private val pathList = mutableListOf<File>()
-
 
     // Regex
     private val featRegex = "/\\bfeat\\b/".toRegex()
@@ -39,7 +38,6 @@ class JGitService(private val options: Options, private val account: Account): G
     }
 
     private fun gitRepositoryCreation() {
-
 
         for(path in account.repoUrls) {
             val localPath = createTempFile("JGitRepository", null)
@@ -75,7 +73,8 @@ class JGitService(private val options: Options, private val account: Account): G
         return Branches(branchListType, branchListType.count())
     }
 
-    override fun createLifetimeObject(): BranchesLifetime {
+    override fun createLifetimeObject(id: Int): BranchesLifetime {
+        git = Git.open(pathList[id])
         branchCall = git.branchList().setListMode(ListMode.REMOTE).call()
 
         return BranchesLifetime(averageBranchesLifetime(BranchType.ALL),
@@ -115,7 +114,7 @@ class JGitService(private val options: Options, private val account: Account): G
     }
 
     private fun listOfSpikeBranches(): List<Branch> {
-        val featureBranches= mutableListOf<Branch>()
+        val spikeBranches= mutableListOf<Branch>()
 
         for(ref in branchCall) {
             val branchName = ref.name
@@ -124,10 +123,10 @@ class JGitService(private val options: Options, private val account: Account): G
                         lastCommitOnBranch(branchName),
                         hasBranchBeenMerged(branchName),
                         hasBranchGoneStale(whenBranchesWereFirstMade(branchName)))
-                featureBranches.add(branch)
+                spikeBranches.add(branch)
             }
         }
-        return featureBranches
+        return spikeBranches
     }
 
     private fun listOfFixBranches(): List<Branch> {
@@ -283,6 +282,7 @@ class JGitService(private val options: Options, private val account: Account): G
         for(day in listOfDays) {
             averageLifetime += day
         }
+
         averageLifetime /= listOfDays.size
         return averageLifetime
     }
