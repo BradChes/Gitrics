@@ -34,7 +34,7 @@ class BranchesController(configPath: String) {
         return jGitService.createBranchesObject(repoName,BranchType.SPIKE)
     }
 
-    @RequestMapping("{irepoNamed}/branches/fix")
+    @RequestMapping("{repoName}/branches/fix")
     fun getFixBranches(@PathVariable repoName: String): Branches {
         return jGitService.createBranchesObject(repoName,BranchType.FIX)
     }
